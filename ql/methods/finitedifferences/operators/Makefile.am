@@ -6,6 +6,7 @@ this_include_HEADERS = \
 	all.hpp \
 	fdm2dblackscholesop.hpp \
 	fdmbatesop.hpp \
+	fdmblackscholesexpfitop.hpp \
 	fdmblackscholesop.hpp \
 	fdmcevop.hpp \
 	fdmg2op.hpp \
@@ -31,6 +32,7 @@ this_include_HEADERS = \
 cpp_files = \
 	fdm2dblackscholesop.cpp \
 	fdmbatesop.cpp \
+	fdmblackscholesexpfitop.cpp \
 	fdmblackscholesop.cpp \
 	fdmcevop.cpp \
 	fdmg2op.cpp \
@@ -83,4 +85,3 @@ all.hpp: Makefile.am
 	subdirs='$(SUBDIRS)'; for i in $$subdirs; do \
 		echo "#include <${subdir}/$$i/all.hpp>" >> ${srcdir}/$@; \
 	done
-

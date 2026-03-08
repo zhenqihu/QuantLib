@@ -10,6 +10,7 @@ this_include_HEADERS = \
 	fdm3dimsolver.hpp \
 	fdmbackwardsolver.hpp \
 	fdmbatessolver.hpp \
+	fdmblackscholesexpfitsolver.hpp \
 	fdmblackscholessolver.hpp \
 	fdmg2solver.hpp \
 	fdmhestonhullwhitesolver.hpp \
@@ -27,6 +28,7 @@ cpp_files = \
 	fdm3dimsolver.cpp \
 	fdmbackwardsolver.cpp \
 	fdmbatessolver.cpp \
+	fdmblackscholesexpfitsolver.cpp \
 	fdmblackscholessolver.cpp \
 	fdmg2solver.cpp \
 	fdmhestonhullwhitesolver.cpp \
@@ -68,4 +70,3 @@ all.hpp: Makefile.am
 	subdirs='$(SUBDIRS)'; for i in $$subdirs; do \
 		echo "#include <${subdir}/$$i/all.hpp>" >> ${srcdir}/$@; \
 	done
-
