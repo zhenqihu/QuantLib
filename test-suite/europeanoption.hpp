@@ -41,11 +41,13 @@ class EuropeanOptionTest {
     static void testLRBinomialEngines();
     static void testJOSHIBinomialEngines();
     static void testFdEngines();
+    static void testFdExpFitEngines();
     static void testIntegralEngines();
     static void testQmcEngines();
     static void testMcEngines();
     static void testFFTEngines();
     static void testLocalVolatility();
+    static void testFdExpFitMesherModes();
     static void testAnalyticEngineDiscountCurve();
     static void testPDESchemes();
     static void testDouglasVsCrankNicolson();

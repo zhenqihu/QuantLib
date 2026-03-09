@@ -42,7 +42,7 @@ namespace QuantLib {
             Handle<GeneralizedBlackScholesProcess> process,
             Real strike,
             FdmSolverDesc solverDesc,
-            const FdmSchemeDesc& schemeDesc = FdmSchemeDesc::Douglas(),
+            const FdmSchemeDesc& schemeDesc = FdmSchemeDesc::ImplicitEuler(),
             bool localVol = false,
             Real illegalLocalVolOverwrite = -Null<Real>(),
             Handle<FdmQuantoHelper> quantoHelper = Handle<FdmQuantoHelper>());

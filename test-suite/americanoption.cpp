@@ -25,6 +25,7 @@
 #include <ql/instruments/vanillaoption.hpp>
 #include <ql/pricingengines/vanilla/baroneadesiwhaleyengine.hpp>
 #include <ql/pricingengines/vanilla/bjerksundstenslandengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/juquadraticengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesshoutengine.hpp>
@@ -423,6 +424,60 @@ void AmericanOptionTest::testFdValues() {
     }
 }
 
+void AmericanOptionTest::testFdExpFitValues() {
+
+    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-difference engine "
+                       "for American options...");
+
+    Date today = Date::todaysDate();
+    DayCounter dc = Actual360();
+    ext::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    ext::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    ext::shared_ptr<YieldTermStructure> qTS = flatRate(today, qRate, dc);
+    ext::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    ext::shared_ptr<YieldTermStructure> rTS = flatRate(today, rRate, dc);
+    ext::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    ext::shared_ptr<BlackVolTermStructure> volTS = flatVol(today, vol, dc);
+
+    Real tolerance = 8.0e-2;
+
+    for (auto& juValue : juValues) {
+
+        ext::shared_ptr<StrikedTypePayoff> payoff(
+            new PlainVanillaPayoff(juValue.type, juValue.strike));
+
+        Date exDate = today + timeToDays(juValue.t);
+        ext::shared_ptr<Exercise> exercise(
+                                         new AmericanExercise(today, exDate));
+
+        spot->setValue(juValue.s);
+        qRate->setValue(juValue.q);
+        rRate->setValue(juValue.r);
+        vol->setValue(juValue.v);
+
+        ext::shared_ptr<BlackScholesMertonProcess> stochProcess =
+            ext::make_shared<BlackScholesMertonProcess>(
+                Handle<Quote>(spot), Handle<YieldTermStructure>(qTS),
+                Handle<YieldTermStructure>(rTS),
+                Handle<BlackVolTermStructure>(volTS));
+
+        ext::shared_ptr<PricingEngine> engine =
+            ext::make_shared<FdBlackScholesExpFitVanillaEngine>(
+                stochProcess, 100, 100);
+
+        VanillaOption option(payoff, exercise);
+        option.setPricingEngine(engine);
+
+        Real calculated = option.NPV();
+        Real error = std::fabs(calculated - juValue.result);
+        if (error > tolerance) {
+            REPORT_FAILURE("value", payoff, exercise, juValue.s, juValue.q,
+                           juValue.r, today, juValue.v, juValue.result,
+                           calculated, error, tolerance);
+        }
+    }
+}
+
 
 namespace {
 
@@ -538,6 +593,12 @@ namespace {
 void AmericanOptionTest::testFdAmericanGreeks() {
     BOOST_TEST_MESSAGE("Testing finite-differences American option greeks...");
     testFdGreeks<FdBlackScholesVanillaEngine>();
+}
+
+void AmericanOptionTest::testFdExpFitAmericanGreeks() {
+    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-differences "
+                       "American option greeks...");
+    testFdGreeks<FdBlackScholesExpFitVanillaEngine>();
 }
 
 void AmericanOptionTest::testFdShoutGreeks() {
@@ -909,7 +970,9 @@ test_suite* AmericanOptionTest::suite(SpeedLevel speed) {
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testBjerksundStenslandValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testJuValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdValues));
+    suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdExpFitValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdAmericanGreeks));
+    suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdExpFitAmericanGreeks));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFDShoutNPV));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testZeroVolFDShoutNPV));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testLargeDividendShoutNPV));
@@ -922,4 +985,3 @@ test_suite* AmericanOptionTest::suite(SpeedLevel speed) {
 
     return suite;
 }
-

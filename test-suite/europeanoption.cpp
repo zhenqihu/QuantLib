@@ -29,6 +29,7 @@
 #include <ql/math/interpolations/bilinearinterpolation.hpp>
 #include <ql/pricingengines/vanilla/analyticeuropeanengine.hpp>
 #include <ql/pricingengines/vanilla/binomialengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesvanillaengine.hpp>
 #include <ql/experimental/variancegamma/fftvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/mceuropeanengine.hpp>
@@ -39,6 +40,7 @@
 #include <ql/termstructures/volatility/equityfx/blackconstantvol.hpp>
 #include <ql/termstructures/volatility/equityfx/blackvariancesurface.hpp>
 #include <ql/utilities/dataformatters.hpp>
+#include <cmath>
 #include <map>
 
 using namespace QuantLib;
@@ -81,6 +83,7 @@ namespace european_option_test {
     enum EngineType { Analytic,
                       JR, CRR, EQP, TGEO, TIAN, LR, JOSHI,
                       FiniteDifferences,
+                      ExpFitFiniteDifferences,
                       Integral,
                       PseudoMonteCarlo, QuasiMonteCarlo,
                       FFT };
@@ -156,6 +159,12 @@ namespace european_option_test {
                             new FdBlackScholesVanillaEngine(stochProcess,
                                                             binomialSteps,
                                                             samples));
+            break;
+          case ExpFitFiniteDifferences:
+            engine = ext::shared_ptr<PricingEngine>(
+                new FdBlackScholesExpFitVanillaEngine(stochProcess,
+                                                      binomialSteps,
+                                                      samples));
             break;
           case Integral:
             engine = ext::shared_ptr<PricingEngine>(
@@ -1203,6 +1212,26 @@ void EuropeanOptionTest::testFdEngines() {
     testEngineConsistency(engine,timeSteps,gridPoints,relativeTol,true);
 }
 
+void EuropeanOptionTest::testFdExpFitEngines() {
+
+    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-difference "
+                       "European engines against analytic results...");
+
+    using namespace european_option_test;
+
+    SavedSettings backup;
+
+    EngineType engine = ExpFitFiniteDifferences;
+    Size timeSteps = 500;
+    Size gridPoints = 500;
+    std::map<std::string,Real> relativeTol;
+    relativeTol["value"] = 1.0e-4;
+    relativeTol["delta"] = 1.0e-6;
+    relativeTol["gamma"] = 1.0e-6;
+    relativeTol["theta"] = 1.0e-3;
+    testEngineConsistency(engine,timeSteps,gridPoints,relativeTol,true);
+}
+
 void EuropeanOptionTest::testIntegralEngines() {
 
     BOOST_TEST_MESSAGE("Testing integral engines against analytic results...");
@@ -1410,6 +1439,80 @@ void EuropeanOptionTest::testLocalVolatility() {
                 }
             }
         }
+    }
+}
+
+void EuropeanOptionTest::testFdExpFitMesherModes() {
+    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-difference "
+                       "European engine mesher modes...");
+
+    SavedSettings backup;
+
+    const DayCounter dc = Actual365Fixed();
+    const Date today = Date(18, February, 2018);
+
+    Settings::instance().evaluationDate() = today;
+
+    const Handle<Quote> spot(ext::make_shared<SimpleQuote>(100.0));
+    const Handle<YieldTermStructure> qTS(flatRate(today, 0.06, dc));
+    const Handle<YieldTermStructure> rTS(flatRate(today, 0.10, dc));
+    const Handle<BlackVolTermStructure> volTS(flatVol(today, 0.35, dc));
+
+    const ext::shared_ptr<BlackScholesMertonProcess> process =
+        ext::make_shared<BlackScholesMertonProcess>(spot, qTS, rTS, volTS);
+
+    VanillaOption option(
+        ext::make_shared<PlainVanillaPayoff>(Option::Put, spot->value()),
+        ext::make_shared<EuropeanExercise>(today + Period(6, Months)));
+
+    option.setPricingEngine(
+        MakeFdBlackScholesExpFitVanillaEngine(process)
+            .withTGrid(100)
+            .withXGrid(200));
+    const Real defaultNpv = option.NPV();
+
+    option.setPricingEngine(
+        MakeFdBlackScholesExpFitVanillaEngine(process)
+            .withTGrid(100)
+            .withXGrid(200)
+            .withEquityMesher(
+                FdBlackScholesExpFitVanillaEngine::Uniform));
+    const Real explicitUniformNpv = option.NPV();
+
+    const Real uniformTol = 1e-12;
+    const Real uniformDiff = std::fabs(defaultNpv - explicitUniformNpv);
+    if (uniformDiff > uniformTol) {
+        BOOST_FAIL("Default ExpFit mesher should match explicit uniform mesher"
+                   << "\n    default NPV:  " << defaultNpv
+                   << "\n    uniform NPV:  " << explicitUniformNpv
+                   << "\n    difference:   " << uniformDiff
+                   << "\n    tolerance:    " << uniformTol);
+    }
+
+    option.setPricingEngine(
+        MakeFdBlackScholesExpFitVanillaEngine(process)
+            .withTGrid(100)
+            .withXGrid(200)
+            .withEquityMesher(
+                FdBlackScholesExpFitVanillaEngine::Concentrating));
+    const Real concentratingNpv = option.NPV();
+
+    if (!std::isfinite(concentratingNpv)) {
+        BOOST_FAIL("Concentrating ExpFit mesher produced a non-finite NPV");
+    }
+
+    option.setPricingEngine(ext::make_shared<AnalyticEuropeanEngine>(process));
+    const Real analyticNpv = option.NPV();
+
+    const Real concentratingTol = 0.02;
+    const Real concentratingDiff = std::fabs(concentratingNpv - analyticNpv);
+    if (concentratingDiff > concentratingTol) {
+        BOOST_FAIL("Concentrating ExpFit mesher failed to reproduce "
+                   "analytic European option values"
+                   << "\n    calculated: " << concentratingNpv
+                   << "\n    expected:   " << analyticNpv
+                   << "\n    difference: " << concentratingDiff
+                   << "\n    tolerance:  " << concentratingTol);
     }
 }
 
@@ -1763,11 +1866,13 @@ test_suite* EuropeanOptionTest::suite() {
     suite->add(QUANTLIB_TEST_CASE(
                               &EuropeanOptionTest::testJOSHIBinomialEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdEngines));
+    suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdExpFitEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testIntegralEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testMcEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testQmcEngines));
 
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testLocalVolatility));
+    suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdExpFitMesherModes));
 
     suite->add(QUANTLIB_TEST_CASE(
                        &EuropeanOptionTest::testAnalyticEngineDiscountCurve));

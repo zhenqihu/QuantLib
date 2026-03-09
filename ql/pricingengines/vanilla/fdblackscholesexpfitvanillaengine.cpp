@@ -182,7 +182,7 @@ namespace QuantLib {
     : process_(std::move(process)), tGrid_(100), xGrid_(100),
       dampingSteps_(0),
       schemeDesc_(
-          ext::make_shared<FdmSchemeDesc>(FdmSchemeDesc::Douglas())),
+          ext::make_shared<FdmSchemeDesc>(FdmSchemeDesc::ImplicitEuler())),
       localVol_(false), illegalLocalVolOverwrite_(-Null<Real>()),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
       cashDividendModel_(FdBlackScholesExpFitVanillaEngine::Spot),
