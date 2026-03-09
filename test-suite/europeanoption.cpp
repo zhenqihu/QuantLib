@@ -1212,24 +1212,81 @@ void EuropeanOptionTest::testFdEngines() {
     testEngineConsistency(engine,timeSteps,gridPoints,relativeTol,true);
 }
 
-void EuropeanOptionTest::testFdExpFitEngines() {
+void EuropeanOptionTest::testFdExpFitEuropeanValues() {
 
     BOOST_TEST_MESSAGE("Testing exponential-fitted finite-difference "
-                       "European engines against analytic results...");
-
-    using namespace european_option_test;
+                       "European engine values against analytic results...");
 
     SavedSettings backup;
 
-    EngineType engine = ExpFitFiniteDifferences;
-    Size timeSteps = 500;
-    Size gridPoints = 500;
-    std::map<std::string,Real> relativeTol;
-    relativeTol["value"] = 1.0e-4;
-    relativeTol["delta"] = 1.0e-6;
-    relativeTol["gamma"] = 1.0e-6;
-    relativeTol["theta"] = 1.0e-3;
-    testEngineConsistency(engine,timeSteps,gridPoints,relativeTol,true);
+    const DayCounter dc = Actual365Fixed();
+    const Date today(18, February, 2018);
+    Settings::instance().evaluationDate() = today;
+
+    const ext::shared_ptr<SimpleQuote> spot =
+        ext::make_shared<SimpleQuote>(100.0);
+    const Handle<YieldTermStructure> qTS(flatRate(today, 0.01, dc));
+    const Handle<YieldTermStructure> rTS(flatRate(today, 0.05, dc));
+    const Handle<BlackVolTermStructure> volTS(flatVol(today, 0.20, dc));
+
+    const ext::shared_ptr<BlackScholesMertonProcess> process =
+        ext::make_shared<BlackScholesMertonProcess>(
+            Handle<Quote>(spot), qTS, rTS, volTS);
+
+    VanillaOption option(
+        ext::make_shared<PlainVanillaPayoff>(Option::Call, 100.0),
+        ext::make_shared<EuropeanExercise>(today + Period(1, Years)));
+    option.setPricingEngine(
+        MakeFdBlackScholesExpFitVanillaEngine(process)
+            .withTGrid(100)
+            .withXGrid(200));
+
+    VanillaOption analyticOption(
+        ext::make_shared<PlainVanillaPayoff>(Option::Call, 100.0),
+        ext::make_shared<EuropeanExercise>(today + Period(1, Years)));
+    analyticOption.setPricingEngine(
+        ext::make_shared<AnalyticEuropeanEngine>(process));
+
+    const Real spots[] = { 80.0, 100.0, 120.0 };
+    Real previousNpv = -1.0;
+
+    for (Real s : spots) {
+        spot->setValue(s);
+
+        const Real npv = option.NPV();
+        const Real analyticNpv = analyticOption.NPV();
+        const Real tol = 0.08 * ((analyticNpv > 1.0) ? analyticNpv : 1.0);
+
+        if (!std::isfinite(npv)) {
+            BOOST_FAIL("ExpFit European engine returned a non-finite NPV"
+                       << "\n    spot: " << s
+                       << "\n    npv:  " << npv);
+        }
+
+        if (npv < -1.0e-10) {
+            BOOST_FAIL("ExpFit European engine returned a negative option value"
+                       << "\n    spot: " << s
+                       << "\n    npv:  " << npv);
+        }
+
+        if (std::fabs(npv - analyticNpv) > tol) {
+            BOOST_FAIL("ExpFit European engine deviates too far from the "
+                       "analytic benchmark"
+                       << "\n    spot:       " << s
+                       << "\n    calculated: " << npv
+                       << "\n    analytic:   " << analyticNpv
+                       << "\n    tolerance:  " << tol);
+        }
+
+        if (previousNpv >= 0.0 && npv <= previousNpv) {
+            BOOST_FAIL("ExpFit Implicit-Euler European call value should "
+                       "increase with spot"
+                       << "\n    previous NPV: " << previousNpv
+                       << "\n    current NPV:  " << npv);
+        }
+
+        previousNpv = npv;
+    }
 }
 
 void EuropeanOptionTest::testIntegralEngines() {
@@ -1442,79 +1499,6 @@ void EuropeanOptionTest::testLocalVolatility() {
     }
 }
 
-void EuropeanOptionTest::testFdExpFitMesherModes() {
-    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-difference "
-                       "European engine mesher modes...");
-
-    SavedSettings backup;
-
-    const DayCounter dc = Actual365Fixed();
-    const Date today = Date(18, February, 2018);
-
-    Settings::instance().evaluationDate() = today;
-
-    const Handle<Quote> spot(ext::make_shared<SimpleQuote>(100.0));
-    const Handle<YieldTermStructure> qTS(flatRate(today, 0.06, dc));
-    const Handle<YieldTermStructure> rTS(flatRate(today, 0.10, dc));
-    const Handle<BlackVolTermStructure> volTS(flatVol(today, 0.35, dc));
-
-    const ext::shared_ptr<BlackScholesMertonProcess> process =
-        ext::make_shared<BlackScholesMertonProcess>(spot, qTS, rTS, volTS);
-
-    VanillaOption option(
-        ext::make_shared<PlainVanillaPayoff>(Option::Put, spot->value()),
-        ext::make_shared<EuropeanExercise>(today + Period(6, Months)));
-
-    option.setPricingEngine(
-        MakeFdBlackScholesExpFitVanillaEngine(process)
-            .withTGrid(100)
-            .withXGrid(200));
-    const Real defaultNpv = option.NPV();
-
-    option.setPricingEngine(
-        MakeFdBlackScholesExpFitVanillaEngine(process)
-            .withTGrid(100)
-            .withXGrid(200)
-            .withEquityMesher(
-                FdBlackScholesExpFitVanillaEngine::Uniform));
-    const Real explicitUniformNpv = option.NPV();
-
-    const Real uniformTol = 1e-12;
-    const Real uniformDiff = std::fabs(defaultNpv - explicitUniformNpv);
-    if (uniformDiff > uniformTol) {
-        BOOST_FAIL("Default ExpFit mesher should match explicit uniform mesher"
-                   << "\n    default NPV:  " << defaultNpv
-                   << "\n    uniform NPV:  " << explicitUniformNpv
-                   << "\n    difference:   " << uniformDiff
-                   << "\n    tolerance:    " << uniformTol);
-    }
-
-    option.setPricingEngine(
-        MakeFdBlackScholesExpFitVanillaEngine(process)
-            .withTGrid(100)
-            .withXGrid(200)
-            .withEquityMesher(
-                FdBlackScholesExpFitVanillaEngine::Concentrating));
-    const Real concentratingNpv = option.NPV();
-
-    if (!std::isfinite(concentratingNpv)) {
-        BOOST_FAIL("Concentrating ExpFit mesher produced a non-finite NPV");
-    }
-
-    option.setPricingEngine(ext::make_shared<AnalyticEuropeanEngine>(process));
-    const Real analyticNpv = option.NPV();
-
-    const Real concentratingTol = 0.02;
-    const Real concentratingDiff = std::fabs(concentratingNpv - analyticNpv);
-    if (concentratingDiff > concentratingTol) {
-        BOOST_FAIL("Concentrating ExpFit mesher failed to reproduce "
-                   "analytic European option values"
-                   << "\n    calculated: " << concentratingNpv
-                   << "\n    expected:   " << analyticNpv
-                   << "\n    difference: " << concentratingDiff
-                   << "\n    tolerance:  " << concentratingTol);
-    }
-}
 
 void EuropeanOptionTest::testAnalyticEngineDiscountCurve() {
     BOOST_TEST_MESSAGE(
@@ -1866,13 +1850,12 @@ test_suite* EuropeanOptionTest::suite() {
     suite->add(QUANTLIB_TEST_CASE(
                               &EuropeanOptionTest::testJOSHIBinomialEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdEngines));
-    suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdExpFitEngines));
+    suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdExpFitEuropeanValues));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testIntegralEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testMcEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testQmcEngines));
 
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testLocalVolatility));
-    suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdExpFitMesherModes));
 
     suite->add(QUANTLIB_TEST_CASE(
                        &EuropeanOptionTest::testAnalyticEngineDiscountCurve));

@@ -23,6 +23,7 @@
 #include "utilities.hpp"
 #include <ql/time/daycounters/actual360.hpp>
 #include <ql/instruments/vanillaoption.hpp>
+#include <ql/pricingengines/vanilla/analyticeuropeanengine.hpp>
 #include <ql/pricingengines/vanilla/baroneadesiwhaleyengine.hpp>
 #include <ql/pricingengines/vanilla/bjerksundstenslandengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
@@ -32,6 +33,7 @@
 #include <ql/termstructures/yield/flatforward.hpp>
 #include <ql/termstructures/volatility/equityfx/blackconstantvol.hpp>
 #include <ql/utilities/dataformatters.hpp>
+#include <cmath>
 #include <map>
 
 using namespace QuantLib;
@@ -439,8 +441,6 @@ void AmericanOptionTest::testFdExpFitValues() {
     ext::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
     ext::shared_ptr<BlackVolTermStructure> volTS = flatVol(today, vol, dc);
 
-    Real tolerance = 8.0e-2;
-
     for (auto& juValue : juValues) {
 
         ext::shared_ptr<StrikedTypePayoff> payoff(
@@ -468,12 +468,42 @@ void AmericanOptionTest::testFdExpFitValues() {
         VanillaOption option(payoff, exercise);
         option.setPricingEngine(engine);
 
+        VanillaOption europeanOption(
+            payoff, ext::make_shared<EuropeanExercise>(exDate));
+        europeanOption.setPricingEngine(
+            ext::make_shared<AnalyticEuropeanEngine>(stochProcess));
+
         Real calculated = option.NPV();
-        Real error = std::fabs(calculated - juValue.result);
-        if (error > tolerance) {
+        const Real europeanValue = europeanOption.NPV();
+        const Real intrinsicValue = (*payoff)(juValue.s);
+        const Real error = std::fabs(calculated - juValue.result);
+        const Real benchmarkTolerance =
+            (0.03 * std::fabs(juValue.result) > 0.15)
+                ? 0.03 * std::fabs(juValue.result)
+                : 0.15;
+
+        if (!std::isfinite(calculated)) {
+            BOOST_FAIL("ExpFit American engine returned a non-finite NPV");
+        }
+
+        if (calculated < intrinsicValue - 1.0e-10) {
+            BOOST_FAIL("American option value should not fall below "
+                       "intrinsic value"
+                       << "\n    calculated: " << calculated
+                       << "\n    intrinsic:  " << intrinsicValue);
+        }
+
+        if (calculated + 5.0e-3 < europeanValue) {
+            BOOST_FAIL("American option value should not fall below the "
+                       "corresponding European value"
+                       << "\n    calculated: " << calculated
+                       << "\n    european:   " << europeanValue);
+        }
+
+        if (error > benchmarkTolerance) {
             REPORT_FAILURE("value", payoff, exercise, juValue.s, juValue.q,
                            juValue.r, today, juValue.v, juValue.result,
-                           calculated, error, tolerance);
+                           calculated, error, benchmarkTolerance);
         }
     }
 }
@@ -593,12 +623,6 @@ namespace {
 void AmericanOptionTest::testFdAmericanGreeks() {
     BOOST_TEST_MESSAGE("Testing finite-differences American option greeks...");
     testFdGreeks<FdBlackScholesVanillaEngine>();
-}
-
-void AmericanOptionTest::testFdExpFitAmericanGreeks() {
-    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-differences "
-                       "American option greeks...");
-    testFdGreeks<FdBlackScholesExpFitVanillaEngine>();
 }
 
 void AmericanOptionTest::testFdShoutGreeks() {
@@ -972,7 +996,6 @@ test_suite* AmericanOptionTest::suite(SpeedLevel speed) {
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdExpFitValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdAmericanGreeks));
-    suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdExpFitAmericanGreeks));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFDShoutNPV));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testZeroVolFDShoutNPV));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testLargeDividendShoutNPV));

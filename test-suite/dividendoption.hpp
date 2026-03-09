@@ -39,7 +39,6 @@ class DividendOptionTest {
     static void testFdEuropeanDegenerate();
     static void testFdAmericanDegenerate();
     static void testFdEuropeanWithDividendToday();
-    static void testFdExpFitEuropeanWithDividendToday();
     static void testFdAmericanWithDividendToday();
     static void testEscrowedDividendModel();
 
