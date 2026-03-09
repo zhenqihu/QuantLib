@@ -738,6 +738,7 @@ set(QuantLib_SRC
     pricingengines/vanilla/exponentialfittinghestonengine.cpp
     pricingengines/vanilla/fdbatesvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesexpfitvanillaengine.cpp
+    pricingengines/vanilla/fdblackscholesuniformvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesshoutengine.cpp
     pricingengines/vanilla/fdcirvanillaengine.cpp
@@ -2030,6 +2031,7 @@ set(QuantLib_HDR
     pricingengines/vanilla/exponentialfittinghestonengine.hpp
     pricingengines/vanilla/fdbatesvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp
+    pricingengines/vanilla/fdblackscholesuniformvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesshoutengine.hpp
     pricingengines/vanilla/fdcirvanillaengine.hpp
