@@ -1182,6 +1182,7 @@
     <ClInclude Include="ql\methods\finitedifferences\operators\all.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdm2dblackscholesop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmbatesop.hpp" />
+    <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholescnvariantop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholesexpfitop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholesop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmcevop.hpp" />
@@ -1197,6 +1198,7 @@
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmlocalvolfwdop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmornsteinuhlenbeckop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmsabrop.hpp" />
+    <ClInclude Include="ql\methods\finitedifferences\operators\fdmweightedvalueop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\firstderivativeop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\ninepointlinearop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\nthorderderivativeop.hpp" />
@@ -1228,6 +1230,7 @@
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdm3dimsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmbackwardsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmbatessolver.hpp" />
+    <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholescnvariantsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholesexpfitsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholessolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmg2solver.hpp" />
@@ -2325,6 +2328,7 @@
     <ClCompile Include="ql\methods\finitedifferences\meshers\uniformgridmesher.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdm2dblackscholesop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmbatesop.cpp" />
+    <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholescnvariantop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholesexpfitop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholesop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmcevop.cpp" />
@@ -2337,6 +2341,7 @@
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmlocalvolfwdop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmornsteinuhlenbeckop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmsabrop.cpp" />
+    <ClCompile Include="ql\methods\finitedifferences\operators\fdmweightedvalueop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\firstderivativeop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\ninepointlinearop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\nthorderderivativeop.cpp" />
@@ -2358,6 +2363,7 @@
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdm3dimsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmbackwardsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmbatessolver.cpp" />
+    <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholescnvariantsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholesexpfitsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholessolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmg2solver.cpp" />
