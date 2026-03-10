@@ -29,6 +29,7 @@
 #include <ql/instruments/dividendvanillaoption.hpp>
 #include <ql/instruments/vanillaoption.hpp>
 #include <ql/pricingengines/vanilla/fddividendshoutengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/analyticdividendeuropeanengine.hpp>
 #include <ql/pricingengines/vanilla/analyticeuropeanengine.hpp>
@@ -36,6 +37,7 @@
 #include <ql/termstructures/yield/flatforward.hpp>
 #include <ql/termstructures/volatility/equityfx/blackconstantvol.hpp>
 #include <ql/utilities/dataformatters.hpp>
+#include <cmath>
 #include <map>
 
 using namespace QuantLib;
@@ -606,6 +608,123 @@ void DividendOptionTest::testFdEuropeanValues() {
     }
 }
 
+void DividendOptionTest::testFdExpFitEuropeanValues() {
+
+    BOOST_TEST_MESSAGE(
+              "Testing exponential-fitted finite-difference dividend "
+              "European option values...");
+
+    SavedSettings backup;
+
+    Size gridPoints = 200;
+    Size timeSteps = 100;
+
+    Option::Type types[] = { Option::Call, Option::Put };
+    Real strikes[] = { 90.0, 100.0, 110.0 };
+    Real underlyings[] = { 100.0 };
+    Rate qRates[] = { 0.00, 0.10 };
+    Rate rRates[] = { 0.01, 0.05 };
+    Integer lengths[] = { 1, 2 };
+    Volatility vols[] = { 0.10, 0.30 };
+
+    DayCounter dc = Actual360();
+    Date today = Date::todaysDate();
+    Settings::instance().evaluationDate() = today;
+
+    ext::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    ext::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<YieldTermStructure> qTS(flatRate(qRate, dc));
+    ext::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<YieldTermStructure> rTS(flatRate(rRate, dc));
+    ext::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS(flatVol(vol, dc));
+
+    for (auto& type : types) {
+        for (double strike : strikes) {
+            for (int length : lengths) {
+                Date exDate = today + length * Years;
+                ext::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
+
+                std::vector<Date> dividendDates;
+                std::vector<Real> dividends;
+                for (Date d = today + 3 * Months; d < exercise->lastDate();
+                     d += 6 * Months) {
+                    dividendDates.push_back(d);
+                    dividends.push_back(5.0);
+                }
+
+                ext::shared_ptr<StrikedTypePayoff> payoff(
+                    new PlainVanillaPayoff(type, strike));
+
+                ext::shared_ptr<BlackScholesMertonProcess> stochProcess(
+                    new BlackScholesMertonProcess(
+                        Handle<Quote>(spot), qTS, rTS, volTS));
+
+                ext::shared_ptr<PricingEngine> engine =
+                    MakeFdBlackScholesExpFitVanillaEngine(stochProcess)
+                        .withTGrid(timeSteps)
+                        .withXGrid(gridPoints)
+                        .withCashDividendModel(
+                            FdBlackScholesExpFitVanillaEngine::Escrowed);
+
+                ext::shared_ptr<PricingEngine> ref_engine(
+                    new AnalyticDividendEuropeanEngine(stochProcess));
+
+                DividendVanillaOption option(payoff, exercise, dividendDates,
+                                             dividends);
+                option.setPricingEngine(engine);
+
+                DividendVanillaOption ref_option(payoff, exercise,
+                                                 dividendDates, dividends);
+                ref_option.setPricingEngine(ref_engine);
+
+                for (double u : underlyings) {
+                    for (double m : qRates) {
+                        for (double n : rRates) {
+                            for (double v : vols) {
+                                Rate q = m, r = n;
+                                spot->setValue(u);
+                                qRate->setValue(q);
+                                rRate->setValue(r);
+                                vol->setValue(v);
+                                Real calculated = option.NPV();
+                                Real expected = ref_option.NPV();
+                                const Real tolerance =
+                                    0.05 * ((std::fabs(expected) > 1.0)
+                                                ? std::fabs(expected)
+                                                : 1.0);
+
+                                if (!std::isfinite(calculated)) {
+                                    BOOST_FAIL("ExpFit Implicit-Euler dividend "
+                                               "European engine returned a "
+                                               "non-finite NPV");
+                                }
+
+                                if (calculated < -1.0e-10) {
+                                    BOOST_FAIL("ExpFit Implicit-Euler dividend "
+                                               "European engine returned a "
+                                               "negative NPV"
+                                               << "\n    calculated: "
+                                               << calculated);
+                                }
+
+                                if (std::fabs(calculated - expected) >
+                                    tolerance) {
+                                    REPORT_FAILURE(
+                                        "value", payoff, exercise, u, q, r,
+                                        today, v, expected, calculated,
+                                        std::fabs(calculated - expected),
+                                        tolerance);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 namespace {
 
@@ -1041,6 +1160,7 @@ test_suite* DividendOptionTest::suite() {
     //suite->add(QUANTLIB_TEST_CASE(&DividendOptionTest::testEuropeanEndLimit));
     suite->add(QUANTLIB_TEST_CASE(&DividendOptionTest::testEuropeanGreeks));
     suite->add(QUANTLIB_TEST_CASE(&DividendOptionTest::testFdEuropeanValues));
+    suite->add(QUANTLIB_TEST_CASE(&DividendOptionTest::testFdExpFitEuropeanValues));
     suite->add(QUANTLIB_TEST_CASE(&DividendOptionTest::testFdEuropeanGreeks));
     suite->add(QUANTLIB_TEST_CASE(&DividendOptionTest::testFdAmericanGreeks));
     suite->add(QUANTLIB_TEST_CASE(
@@ -1056,4 +1176,3 @@ test_suite* DividendOptionTest::suite() {
 
     return suite;
 }
-

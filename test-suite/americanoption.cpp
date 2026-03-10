@@ -23,14 +23,17 @@
 #include "utilities.hpp"
 #include <ql/time/daycounters/actual360.hpp>
 #include <ql/instruments/vanillaoption.hpp>
+#include <ql/pricingengines/vanilla/analyticeuropeanengine.hpp>
 #include <ql/pricingengines/vanilla/baroneadesiwhaleyengine.hpp>
 #include <ql/pricingengines/vanilla/bjerksundstenslandengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/juquadraticengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesshoutengine.hpp>
 #include <ql/termstructures/yield/flatforward.hpp>
 #include <ql/termstructures/volatility/equityfx/blackconstantvol.hpp>
 #include <ql/utilities/dataformatters.hpp>
+#include <cmath>
 #include <map>
 
 using namespace QuantLib;
@@ -419,6 +422,88 @@ void AmericanOptionTest::testFdValues() {
         if (error > tolerance) {
             REPORT_FAILURE("value", payoff, exercise, juValue.s, juValue.q, juValue.r, today,
                            juValue.v, juValue.result, calculated, error, tolerance);
+        }
+    }
+}
+
+void AmericanOptionTest::testFdExpFitValues() {
+
+    BOOST_TEST_MESSAGE("Testing exponential-fitted finite-difference engine "
+                       "for American options...");
+
+    Date today = Date::todaysDate();
+    DayCounter dc = Actual360();
+    ext::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    ext::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    ext::shared_ptr<YieldTermStructure> qTS = flatRate(today, qRate, dc);
+    ext::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    ext::shared_ptr<YieldTermStructure> rTS = flatRate(today, rRate, dc);
+    ext::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    ext::shared_ptr<BlackVolTermStructure> volTS = flatVol(today, vol, dc);
+
+    for (auto& juValue : juValues) {
+
+        ext::shared_ptr<StrikedTypePayoff> payoff(
+            new PlainVanillaPayoff(juValue.type, juValue.strike));
+
+        Date exDate = today + timeToDays(juValue.t);
+        ext::shared_ptr<Exercise> exercise(
+                                         new AmericanExercise(today, exDate));
+
+        spot->setValue(juValue.s);
+        qRate->setValue(juValue.q);
+        rRate->setValue(juValue.r);
+        vol->setValue(juValue.v);
+
+        ext::shared_ptr<BlackScholesMertonProcess> stochProcess =
+            ext::make_shared<BlackScholesMertonProcess>(
+                Handle<Quote>(spot), Handle<YieldTermStructure>(qTS),
+                Handle<YieldTermStructure>(rTS),
+                Handle<BlackVolTermStructure>(volTS));
+
+        ext::shared_ptr<PricingEngine> engine =
+            ext::make_shared<FdBlackScholesExpFitVanillaEngine>(
+                stochProcess, 100, 100);
+
+        VanillaOption option(payoff, exercise);
+        option.setPricingEngine(engine);
+
+        VanillaOption europeanOption(
+            payoff, ext::make_shared<EuropeanExercise>(exDate));
+        europeanOption.setPricingEngine(
+            ext::make_shared<AnalyticEuropeanEngine>(stochProcess));
+
+        Real calculated = option.NPV();
+        const Real europeanValue = europeanOption.NPV();
+        const Real intrinsicValue = (*payoff)(juValue.s);
+        const Real error = std::fabs(calculated - juValue.result);
+        const Real benchmarkTolerance =
+            (0.03 * std::fabs(juValue.result) > 0.15)
+                ? 0.03 * std::fabs(juValue.result)
+                : 0.15;
+
+        if (!std::isfinite(calculated)) {
+            BOOST_FAIL("ExpFit American engine returned a non-finite NPV");
+        }
+
+        if (calculated < intrinsicValue - 1.0e-10) {
+            BOOST_FAIL("American option value should not fall below "
+                       "intrinsic value"
+                       << "\n    calculated: " << calculated
+                       << "\n    intrinsic:  " << intrinsicValue);
+        }
+
+        if (calculated + 5.0e-3 < europeanValue) {
+            BOOST_FAIL("American option value should not fall below the "
+                       "corresponding European value"
+                       << "\n    calculated: " << calculated
+                       << "\n    european:   " << europeanValue);
+        }
+
+        if (error > benchmarkTolerance) {
+            REPORT_FAILURE("value", payoff, exercise, juValue.s, juValue.q,
+                           juValue.r, today, juValue.v, juValue.result,
+                           calculated, error, benchmarkTolerance);
         }
     }
 }
@@ -909,6 +994,7 @@ test_suite* AmericanOptionTest::suite(SpeedLevel speed) {
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testBjerksundStenslandValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testJuValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdValues));
+    suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdExpFitValues));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFdAmericanGreeks));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testFDShoutNPV));
     suite->add(QUANTLIB_TEST_CASE(&AmericanOptionTest::testZeroVolFDShoutNPV));
@@ -922,4 +1008,3 @@ test_suite* AmericanOptionTest::suite(SpeedLevel speed) {
 
     return suite;
 }
-

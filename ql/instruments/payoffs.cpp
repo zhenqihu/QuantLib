@@ -194,6 +194,54 @@ namespace QuantLib {
             Payoff::accept(v);
     }
 
+    TruncatedPayoff::TruncatedPayoff(Option::Type type,
+                                     Real strike,
+                                     Real barrier)
+    : StrikedTypePayoff(type, strike), barrier_(barrier) {
+        switch (type_) {
+          case Option::Call:
+            QL_REQUIRE(barrier_ > strike_,
+                       "barrier (" << barrier_ << ") must be higher than "
+                       "strike (" << strike_ << ") for a call payoff");
+            break;
+          case Option::Put:
+            QL_REQUIRE(barrier_ < strike_,
+                       "barrier (" << barrier_ << ") must be lower than "
+                       "strike (" << strike_ << ") for a put payoff");
+            break;
+          default:
+            QL_FAIL("unknown/illegal option type");
+        }
+    }
+
+    std::string TruncatedPayoff::description() const {
+        std::ostringstream result;
+        result << StrikedTypePayoff::description()
+               << ", " << barrier() << " barrier";
+        return result.str();
+    }
+
+    Real TruncatedPayoff::operator()(Real price) const {
+        switch (type_) {
+          case Option::Call:
+            return (price >= strike_ && price <= barrier_)
+                ? (price - strike_) : 0.0;
+          case Option::Put:
+            return (price >= barrier_ && price <= strike_)
+                ? (strike_ - price) : 0.0;
+          default:
+            QL_FAIL("unknown/illegal option type");
+        }
+    }
+
+    void TruncatedPayoff::accept(AcyclicVisitor& v) {
+        auto* v1 = dynamic_cast<Visitor<TruncatedPayoff>*>(&v);
+        if (v1 != nullptr)
+            v1->visit(*this);
+        else
+            Payoff::accept(v);
+    }
+
     Real SuperFundPayoff::operator()(Real price) const {
         return (price>=strike_ && price<secondStrike_) ? price/strike_ : 0.0;
     }

@@ -1182,6 +1182,7 @@
     <ClInclude Include="ql\methods\finitedifferences\operators\all.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdm2dblackscholesop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmbatesop.hpp" />
+    <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholesexpfitop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholesop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmcevop.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmg2op.hpp" />
@@ -1227,6 +1228,7 @@
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdm3dimsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmbackwardsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmbatessolver.hpp" />
+    <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholesexpfitsolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholessolver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmg2solver.hpp" />
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmhestonhullwhitesolver.hpp" />
@@ -1574,6 +1576,8 @@
     <ClInclude Include="ql\pricingengines\vanilla\discretizedvanillaoption.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\exponentialfittinghestonengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdbatesvanillaengine.hpp" />
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.hpp" />
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesshoutengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdcevvanillaengine.hpp" />
@@ -2321,6 +2325,7 @@
     <ClCompile Include="ql\methods\finitedifferences\meshers\uniformgridmesher.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdm2dblackscholesop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmbatesop.cpp" />
+    <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholesexpfitop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholesop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmcevop.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmg2op.cpp" />
@@ -2353,6 +2358,7 @@
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdm3dimsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmbackwardsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmbatessolver.cpp" />
+    <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholesexpfitsolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholessolver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmg2solver.cpp" />
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmhestonhullwhitesolver.cpp" />
@@ -2598,6 +2604,8 @@
     <ClCompile Include="ql\pricingengines\vanilla\discretizedvanillaoption.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\exponentialfittinghestonengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdbatesvanillaengine.cpp" />
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.cpp" />
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesshoutengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdcevvanillaengine.cpp" />

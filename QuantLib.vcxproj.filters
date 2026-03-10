@@ -3968,6 +3968,9 @@
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmbatesop.hpp">
       <Filter>methods\finitedifferences\operators</Filter>
     </ClInclude>
+    <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholesexpfitop.hpp">
+      <Filter>methods\finitedifferences\operators</Filter>
+    </ClInclude>
     <ClInclude Include="ql\methods\finitedifferences\operators\fdmblackscholesop.hpp">
       <Filter>methods\finitedifferences\operators</Filter>
     </ClInclude>
@@ -3981,6 +3984,9 @@
       <Filter>methods\finitedifferences\operators</Filter>
     </ClInclude>
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmbatessolver.hpp">
+      <Filter>methods\finitedifferences\solvers</Filter>
+    </ClInclude>
+    <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholesexpfitsolver.hpp">
       <Filter>methods\finitedifferences\solvers</Filter>
     </ClInclude>
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdmblackscholessolver.hpp">
@@ -4116,6 +4122,12 @@
       <Filter>methods\finitedifferences\stepconditions</Filter>
     </ClInclude>
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.hpp">
+      <Filter>pricingengines\vanilla</Filter>
+    </ClInclude>
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.hpp">
+      <Filter>pricingengines\vanilla</Filter>
+    </ClInclude>
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.hpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClInclude>
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdm1dimsolver.hpp">
@@ -6751,6 +6763,9 @@
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmbatesop.cpp">
       <Filter>methods\finitedifferences\operators</Filter>
     </ClCompile>
+    <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholesexpfitop.cpp">
+      <Filter>methods\finitedifferences\operators</Filter>
+    </ClCompile>
     <ClCompile Include="ql\methods\finitedifferences\operators\fdmblackscholesop.cpp">
       <Filter>methods\finitedifferences\operators</Filter>
     </ClCompile>
@@ -6764,6 +6779,9 @@
       <Filter>methods\finitedifferences\operators</Filter>
     </ClCompile>
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmbatessolver.cpp">
+      <Filter>methods\finitedifferences\solvers</Filter>
+    </ClCompile>
+    <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholesexpfitsolver.cpp">
       <Filter>methods\finitedifferences\solvers</Filter>
     </ClCompile>
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdmblackscholessolver.cpp">
@@ -6863,6 +6881,12 @@
       <Filter>methods\finitedifferences\stepconditions</Filter>
     </ClCompile>
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.cpp">
+      <Filter>pricingengines\vanilla</Filter>
+    </ClCompile>
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.cpp">
+      <Filter>pricingengines\vanilla</Filter>
+    </ClCompile>
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.cpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClCompile>
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdm1dimsolver.cpp">

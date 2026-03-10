@@ -27,6 +27,8 @@ this_include_HEADERS = \
     jumpdiffusionengine.hpp \
     juquadraticengine.hpp \
 	fdbatesvanillaengine.hpp \
+	fdblackscholesexpfitvanillaengine.hpp \
+	fdblackscholesuniformvanillaengine.hpp \
 	fdblackscholesvanillaengine.hpp \
 	fdblackscholesshoutengine.hpp \
 	fdcevvanillaengine.hpp \
@@ -73,6 +75,8 @@ cpp_files = \
     jumpdiffusionengine.cpp \
     juquadraticengine.cpp \
 	fdbatesvanillaengine.cpp \
+	fdblackscholesexpfitvanillaengine.cpp \
+	fdblackscholesuniformvanillaengine.cpp \
 	fdblackscholesvanillaengine.cpp \
 	fdblackscholesshoutengine.cpp \
 	fdcevvanillaengine.cpp \
@@ -119,4 +123,3 @@ all.hpp: Makefile.am
 	subdirs='$(SUBDIRS)'; for i in $$subdirs; do \
 		echo "#include <${subdir}/$$i/all.hpp>" >> ${srcdir}/$@; \
 	done
-

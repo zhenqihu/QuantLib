@@ -193,6 +193,24 @@ namespace QuantLib {
         Real secondStrike_;
     };
 
+    //! Truncated vanilla payoff
+    class TruncatedPayoff : public StrikedTypePayoff {
+      public:
+        TruncatedPayoff(Option::Type type,
+                        Real strike,
+                        Real barrier);
+        //! \name Payoff interface
+        //@{
+        std::string name() const override { return "Truncated"; }
+        std::string description() const override;
+        Real operator()(Real price) const override;
+        void accept(AcyclicVisitor&) override;
+        //@}
+        Real barrier() const { return barrier_; }
+      protected:
+        Real barrier_;
+    };
+
     //! Binary supershare and superfund payoffs
 
     //! Binary superfund payoff
