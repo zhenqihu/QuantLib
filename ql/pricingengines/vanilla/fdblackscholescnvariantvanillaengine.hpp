@@ -48,7 +48,9 @@ namespace QuantLib {
                 FdmSchemeDesc::CrankNicolson(),
             bool localVol = false,
             Real illegalLocalVolOverwrite = -Null<Real>(),
-            CashDividendModel cashDividendModel = Spot);
+            CashDividendModel cashDividendModel = Spot,
+            Real xMinConstraint = Null<Real>(),
+            Real xMaxConstraint = Null<Real>());
 
         FdBlackScholesCnVariantVanillaEngine(
             ext::shared_ptr<GeneralizedBlackScholesProcess>,
@@ -60,7 +62,9 @@ namespace QuantLib {
                 FdmSchemeDesc::CrankNicolson(),
             bool localVol = false,
             Real illegalLocalVolOverwrite = -Null<Real>(),
-            CashDividendModel cashDividendModel = Spot);
+            CashDividendModel cashDividendModel = Spot,
+            Real xMinConstraint = Null<Real>(),
+            Real xMaxConstraint = Null<Real>());
 
         void calculate() const override;
 
@@ -72,6 +76,7 @@ namespace QuantLib {
         const Real illegalLocalVolOverwrite_;
         const ext::shared_ptr<FdmQuantoHelper> quantoHelper_;
         const CashDividendModel cashDividendModel_;
+        const Real xMinConstraint_, xMaxConstraint_;
     };
 
     class MakeFdBlackScholesCnVariantVanillaEngine {
@@ -98,6 +103,11 @@ namespace QuantLib {
             FdBlackScholesCnVariantVanillaEngine::CashDividendModel
                 cashDividendModel);
 
+        MakeFdBlackScholesCnVariantVanillaEngine& withXMinConstraint(
+            Real xMinConstraint);
+        MakeFdBlackScholesCnVariantVanillaEngine& withXMaxConstraint(
+            Real xMaxConstraint);
+
         operator ext::shared_ptr<PricingEngine>() const;
 
       private:
@@ -109,6 +119,7 @@ namespace QuantLib {
         ext::shared_ptr<FdmQuantoHelper> quantoHelper_;
         FdBlackScholesCnVariantVanillaEngine::CashDividendModel
             cashDividendModel_;
+        Real xMinConstraint_, xMaxConstraint_;
     };
 }
 

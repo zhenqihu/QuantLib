@@ -44,13 +44,16 @@ namespace QuantLib {
         const FdmSchemeDesc& schemeDesc,
         bool localVol,
         Real illegalLocalVolOverwrite,
-        CashDividendModel cashDividendModel)
+        CashDividendModel cashDividendModel,
+        Real xMinConstraint,
+        Real xMaxConstraint)
     : process_(std::move(process)), tGrid_(tGrid), xGrid_(xGrid),
       dampingSteps_(dampingSteps), schemeDesc_(schemeDesc),
       localVol_(localVol),
       illegalLocalVolOverwrite_(illegalLocalVolOverwrite),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
-      cashDividendModel_(cashDividendModel) {
+      cashDividendModel_(cashDividendModel),
+      xMinConstraint_(xMinConstraint), xMaxConstraint_(xMaxConstraint) {
         registerWith(process_);
     }
 
@@ -64,13 +67,16 @@ namespace QuantLib {
         const FdmSchemeDesc& schemeDesc,
         bool localVol,
         Real illegalLocalVolOverwrite,
-        CashDividendModel cashDividendModel)
+        CashDividendModel cashDividendModel,
+        Real xMinConstraint,
+        Real xMaxConstraint)
     : process_(std::move(process)), tGrid_(tGrid), xGrid_(xGrid),
       dampingSteps_(dampingSteps), schemeDesc_(schemeDesc),
       localVol_(localVol),
       illegalLocalVolOverwrite_(illegalLocalVolOverwrite),
       quantoHelper_(std::move(quantoHelper)),
-      cashDividendModel_(cashDividendModel) {
+      cashDividendModel_(cashDividendModel),
+      xMinConstraint_(xMinConstraint), xMaxConstraint_(xMaxConstraint) {
         registerWith(process_);
         registerWith(quantoHelper_);
     }
@@ -120,10 +126,15 @@ namespace QuantLib {
             ext::dynamic_pointer_cast<StrikedTypePayoff>(arguments_.payoff);
         QL_REQUIRE(payoff, "non-striked payoff given");
 
+        if (xMinConstraint_ != Null<Real>() && xMaxConstraint_ != Null<Real>()) {
+            QL_REQUIRE(xMinConstraint_ < xMaxConstraint_,
+                       "xMinConstraint must be smaller than xMaxConstraint");
+        }
+
         const ext::shared_ptr<Fdm1dMesher> equityMesher =
             ext::make_shared<FdmBlackScholesMesher>(
-                xGrid_, process_, maturity, payoff->strike(), Null<Real>(),
-                Null<Real>(), 0.0001, 1.5,
+                xGrid_, process_, maturity, payoff->strike(),
+                xMinConstraint_, xMaxConstraint_, 0.0001, 1.5,
                 std::make_pair(Null<Real>(), Null<Real>()), dividendSchedule,
                 quantoHelper_, spotAdjustment);
 
@@ -181,7 +192,8 @@ namespace QuantLib {
           ext::make_shared<FdmSchemeDesc>(FdmSchemeDesc::CrankNicolson())),
       localVol_(false), illegalLocalVolOverwrite_(-Null<Real>()),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
-      cashDividendModel_(FdBlackScholesCnVariantVanillaEngine::Spot) {}
+      cashDividendModel_(FdBlackScholesCnVariantVanillaEngine::Spot),
+      xMinConstraint_(Null<Real>()), xMaxConstraint_(Null<Real>()) {}
 
     MakeFdBlackScholesCnVariantVanillaEngine&
     MakeFdBlackScholesCnVariantVanillaEngine::withQuantoHelper(
@@ -237,11 +249,25 @@ namespace QuantLib {
         return *this;
     }
 
+    MakeFdBlackScholesCnVariantVanillaEngine&
+    MakeFdBlackScholesCnVariantVanillaEngine::withXMinConstraint(
+        Real xMinConstraint) {
+        xMinConstraint_ = xMinConstraint;
+        return *this;
+    }
+
+    MakeFdBlackScholesCnVariantVanillaEngine&
+    MakeFdBlackScholesCnVariantVanillaEngine::withXMaxConstraint(
+        Real xMaxConstraint) {
+        xMaxConstraint_ = xMaxConstraint;
+        return *this;
+    }
+
     MakeFdBlackScholesCnVariantVanillaEngine::operator
     ext::shared_ptr<PricingEngine>() const {
         return ext::make_shared<FdBlackScholesCnVariantVanillaEngine>(
             process_, quantoHelper_, tGrid_, xGrid_, dampingSteps_,
             *schemeDesc_, localVol_, illegalLocalVolOverwrite_,
-            cashDividendModel_);
+            cashDividendModel_, xMinConstraint_, xMaxConstraint_);
     }
 }
