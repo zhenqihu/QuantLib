@@ -6,6 +6,7 @@ this_include_HEADERS = \
 	all.hpp \
 	fdm2dblackscholesop.hpp \
 	fdmbatesop.hpp \
+	fdmblackscholescnvariantop.hpp \
 	fdmblackscholesexpfitop.hpp \
 	fdmblackscholesop.hpp \
 	fdmcevop.hpp \
@@ -21,6 +22,7 @@ this_include_HEADERS = \
 	fdmlinearopiterator.hpp \
 	fdmlinearoplayout.hpp \
 	fdmsabrop.hpp \
+	fdmweightedvalueop.hpp \
 	firstderivativeop.hpp \
 	ninepointlinearop.hpp \
 	nthorderderivativeop.hpp \
@@ -32,6 +34,7 @@ this_include_HEADERS = \
 cpp_files = \
 	fdm2dblackscholesop.cpp \
 	fdmbatesop.cpp \
+	fdmblackscholescnvariantop.cpp \
 	fdmblackscholesexpfitop.cpp \
 	fdmblackscholesop.cpp \
 	fdmcevop.cpp \
@@ -44,6 +47,7 @@ cpp_files = \
 	fdmlocalvolfwdop.cpp \
 	fdmornsteinuhlenbeckop.cpp \
 	fdmsabrop.cpp \
+	fdmweightedvalueop.cpp \
 	firstderivativeop.cpp \
 	ninepointlinearop.cpp \
 	nthorderderivativeop.cpp \

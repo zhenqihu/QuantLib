@@ -33,6 +33,7 @@ class DividendOptionTest {
     static void testEuropeanEndLimit();
     static void testEuropeanGreeks();
     static void testFdEuropeanValues();
+    static void testFdCnVariantEuropeanValues();
     static void testFdExpFitEuropeanValues();
     static void testFdEuropeanGreeks();
     static void testFdAmericanGreeks();

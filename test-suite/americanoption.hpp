@@ -34,6 +34,7 @@ class AmericanOptionTest {
     static void testBjerksundStenslandValues();
     static void testJuValues();
     static void testFdValues();
+    static void testFdCnVariantValues();
     static void testFdExpFitValues();
     static void testFdAmericanGreeks();
     static void testFdShoutGreeks();

@@ -3,6 +3,7 @@
 
 #include <ql/methods/finitedifferences/operators/fdm2dblackscholesop.hpp>
 #include <ql/methods/finitedifferences/operators/fdmbatesop.hpp>
+#include <ql/methods/finitedifferences/operators/fdmblackscholescnvariantop.hpp>
 #include <ql/methods/finitedifferences/operators/fdmblackscholesexpfitop.hpp>
 #include <ql/methods/finitedifferences/operators/fdmblackscholesop.hpp>
 #include <ql/methods/finitedifferences/operators/fdmcevop.hpp>
@@ -18,6 +19,7 @@
 #include <ql/methods/finitedifferences/operators/fdmlocalvolfwdop.hpp>
 #include <ql/methods/finitedifferences/operators/fdmornsteinuhlenbeckop.hpp>
 #include <ql/methods/finitedifferences/operators/fdmsabrop.hpp>
+#include <ql/methods/finitedifferences/operators/fdmweightedvalueop.hpp>
 #include <ql/methods/finitedifferences/operators/firstderivativeop.hpp>
 #include <ql/methods/finitedifferences/operators/ninepointlinearop.hpp>
 #include <ql/methods/finitedifferences/operators/nthorderderivativeop.hpp>

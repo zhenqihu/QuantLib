@@ -29,6 +29,7 @@
 #include <ql/math/interpolations/bilinearinterpolation.hpp>
 #include <ql/pricingengines/vanilla/analyticeuropeanengine.hpp>
 #include <ql/pricingengines/vanilla/binomialengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholescnvariantvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesvanillaengine.hpp>
 #include <ql/experimental/variancegamma/fftvanillaengine.hpp>
@@ -1289,6 +1290,84 @@ void EuropeanOptionTest::testFdExpFitEuropeanValues() {
     }
 }
 
+void EuropeanOptionTest::testFdCnVariantEuropeanValues() {
+
+    BOOST_TEST_MESSAGE("Testing Crank-Nicolson variant finite-difference "
+                       "European engine values against analytic results...");
+
+    SavedSettings backup;
+
+    const DayCounter dc = Actual365Fixed();
+    const Date today(18, February, 2018);
+    Settings::instance().evaluationDate() = today;
+
+    const ext::shared_ptr<SimpleQuote> spot =
+        ext::make_shared<SimpleQuote>(100.0);
+    const Handle<YieldTermStructure> qTS(flatRate(today, 0.01, dc));
+    const Handle<YieldTermStructure> rTS(flatRate(today, 0.05, dc));
+    const Handle<BlackVolTermStructure> volTS(flatVol(today, 0.20, dc));
+
+    const ext::shared_ptr<BlackScholesMertonProcess> process =
+        ext::make_shared<BlackScholesMertonProcess>(
+            Handle<Quote>(spot), qTS, rTS, volTS);
+
+    VanillaOption option(
+        ext::make_shared<PlainVanillaPayoff>(Option::Call, 100.0),
+        ext::make_shared<EuropeanExercise>(today + Period(1, Years)));
+    option.setPricingEngine(
+        MakeFdBlackScholesCnVariantVanillaEngine(process)
+            .withTGrid(100)
+            .withXGrid(200));
+
+    VanillaOption analyticOption(
+        ext::make_shared<PlainVanillaPayoff>(Option::Call, 100.0),
+        ext::make_shared<EuropeanExercise>(today + Period(1, Years)));
+    analyticOption.setPricingEngine(
+        ext::make_shared<AnalyticEuropeanEngine>(process));
+
+    const Real spots[] = {80.0, 100.0, 120.0};
+    Real previousNpv = -1.0;
+
+    for (Real s : spots) {
+        spot->setValue(s);
+
+        const Real npv = option.NPV();
+        const Real analyticNpv = analyticOption.NPV();
+        const Real tol = 0.05 * ((analyticNpv > 1.0) ? analyticNpv : 1.0);
+
+        if (!std::isfinite(npv)) {
+            BOOST_FAIL("CN variant European engine returned a non-finite NPV"
+                       << "\n    spot: " << s
+                       << "\n    npv:  " << npv);
+        }
+
+        if (npv < -1.0e-10) {
+            BOOST_FAIL("CN variant European engine returned a negative "
+                       "option value"
+                       << "\n    spot: " << s
+                       << "\n    npv:  " << npv);
+        }
+
+        if (std::fabs(npv - analyticNpv) > tol) {
+            BOOST_FAIL("CN variant European engine deviates too far from "
+                       "the analytic benchmark"
+                       << "\n    spot:       " << s
+                       << "\n    calculated: " << npv
+                       << "\n    analytic:   " << analyticNpv
+                       << "\n    tolerance:  " << tol);
+        }
+
+        if (previousNpv >= 0.0 && npv <= previousNpv) {
+            BOOST_FAIL("CN variant European call value should increase "
+                       "with spot"
+                       << "\n    previous NPV: " << previousNpv
+                       << "\n    current NPV:  " << npv);
+        }
+
+        previousNpv = npv;
+    }
+}
+
 void EuropeanOptionTest::testIntegralEngines() {
 
     BOOST_TEST_MESSAGE("Testing integral engines against analytic results...");
@@ -1848,8 +1927,10 @@ test_suite* EuropeanOptionTest::suite() {
                                &EuropeanOptionTest::testTIANBinomialEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testLRBinomialEngines));
     suite->add(QUANTLIB_TEST_CASE(
-                              &EuropeanOptionTest::testJOSHIBinomialEngines));
+                                    &EuropeanOptionTest::testJOSHIBinomialEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdEngines));
+    suite->add(QUANTLIB_TEST_CASE(
+        &EuropeanOptionTest::testFdCnVariantEuropeanValues));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testFdExpFitEuropeanValues));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testIntegralEngines));
     suite->add(QUANTLIB_TEST_CASE(&EuropeanOptionTest::testMcEngines));

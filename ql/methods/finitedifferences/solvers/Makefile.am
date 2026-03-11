@@ -10,6 +10,7 @@ this_include_HEADERS = \
 	fdm3dimsolver.hpp \
 	fdmbackwardsolver.hpp \
 	fdmbatessolver.hpp \
+	fdmblackscholescnvariantsolver.hpp \
 	fdmblackscholesexpfitsolver.hpp \
 	fdmblackscholessolver.hpp \
 	fdmg2solver.hpp \
@@ -28,6 +29,7 @@ cpp_files = \
 	fdm3dimsolver.cpp \
 	fdmbackwardsolver.cpp \
 	fdmbatessolver.cpp \
+	fdmblackscholescnvariantsolver.cpp \
 	fdmblackscholesexpfitsolver.cpp \
 	fdmblackscholessolver.cpp \
 	fdmg2solver.cpp \

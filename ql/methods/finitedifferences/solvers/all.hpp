@@ -7,6 +7,7 @@
 #include <ql/methods/finitedifferences/solvers/fdm3dimsolver.hpp>
 #include <ql/methods/finitedifferences/solvers/fdmbackwardsolver.hpp>
 #include <ql/methods/finitedifferences/solvers/fdmbatessolver.hpp>
+#include <ql/methods/finitedifferences/solvers/fdmblackscholescnvariantsolver.hpp>
 #include <ql/methods/finitedifferences/solvers/fdmblackscholesexpfitsolver.hpp>
 #include <ql/methods/finitedifferences/solvers/fdmblackscholessolver.hpp>
 #include <ql/methods/finitedifferences/solvers/fdmcirsolver.hpp>

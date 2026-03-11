@@ -455,6 +455,7 @@ set(QuantLib_SRC
     methods/finitedifferences/meshers/uniformgridmesher.cpp
     methods/finitedifferences/operators/fdm2dblackscholesop.cpp
     methods/finitedifferences/operators/fdmbatesop.cpp
+    methods/finitedifferences/operators/fdmblackscholescnvariantop.cpp
     methods/finitedifferences/operators/fdmblackscholesexpfitop.cpp
     methods/finitedifferences/operators/fdmblackscholesop.cpp
     methods/finitedifferences/operators/fdmcevop.cpp
@@ -467,6 +468,7 @@ set(QuantLib_SRC
     methods/finitedifferences/operators/fdmlocalvolfwdop.cpp
     methods/finitedifferences/operators/fdmornsteinuhlenbeckop.cpp
     methods/finitedifferences/operators/fdmsabrop.cpp
+    methods/finitedifferences/operators/fdmweightedvalueop.cpp
     methods/finitedifferences/operators/firstderivativeop.cpp
     methods/finitedifferences/operators/ninepointlinearop.cpp
     methods/finitedifferences/operators/nthorderderivativeop.cpp
@@ -488,6 +490,7 @@ set(QuantLib_SRC
     methods/finitedifferences/solvers/fdm3dimsolver.cpp
     methods/finitedifferences/solvers/fdmbackwardsolver.cpp
     methods/finitedifferences/solvers/fdmbatessolver.cpp
+    methods/finitedifferences/solvers/fdmblackscholescnvariantsolver.cpp
     methods/finitedifferences/solvers/fdmblackscholesexpfitsolver.cpp
     methods/finitedifferences/solvers/fdmblackscholessolver.cpp
     methods/finitedifferences/solvers/fdmg2solver.cpp
@@ -737,6 +740,7 @@ set(QuantLib_SRC
     pricingengines/vanilla/discretizedvanillaoption.cpp
     pricingengines/vanilla/exponentialfittinghestonengine.cpp
     pricingengines/vanilla/fdbatesvanillaengine.cpp
+    pricingengines/vanilla/fdblackscholescnvariantvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesexpfitvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesuniformvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesvanillaengine.cpp
@@ -1629,6 +1633,7 @@ set(QuantLib_HDR
     methods/finitedifferences/operators/all.hpp
     methods/finitedifferences/operators/fdm2dblackscholesop.hpp
     methods/finitedifferences/operators/fdmbatesop.hpp
+    methods/finitedifferences/operators/fdmblackscholescnvariantop.hpp
     methods/finitedifferences/operators/fdmblackscholesexpfitop.hpp
     methods/finitedifferences/operators/fdmblackscholesop.hpp
     methods/finitedifferences/operators/fdmcevop.hpp
@@ -1644,6 +1649,7 @@ set(QuantLib_HDR
     methods/finitedifferences/operators/fdmlocalvolfwdop.hpp
     methods/finitedifferences/operators/fdmornsteinuhlenbeckop.hpp
     methods/finitedifferences/operators/fdmsabrop.hpp
+    methods/finitedifferences/operators/fdmweightedvalueop.hpp
     methods/finitedifferences/operators/firstderivativeop.hpp
     methods/finitedifferences/operators/ninepointlinearop.hpp
     methods/finitedifferences/operators/nthorderderivativeop.hpp
@@ -1675,6 +1681,7 @@ set(QuantLib_HDR
     methods/finitedifferences/solvers/fdm3dimsolver.hpp
     methods/finitedifferences/solvers/fdmbackwardsolver.hpp
     methods/finitedifferences/solvers/fdmbatessolver.hpp
+    methods/finitedifferences/solvers/fdmblackscholescnvariantsolver.hpp
     methods/finitedifferences/solvers/fdmblackscholesexpfitsolver.hpp
     methods/finitedifferences/solvers/fdmblackscholessolver.hpp
     methods/finitedifferences/solvers/fdmg2solver.hpp
@@ -2030,6 +2037,7 @@ set(QuantLib_HDR
     pricingengines/vanilla/discretizedvanillaoption.hpp
     pricingengines/vanilla/exponentialfittinghestonengine.hpp
     pricingengines/vanilla/fdbatesvanillaengine.hpp
+    pricingengines/vanilla/fdblackscholescnvariantvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesuniformvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesvanillaengine.hpp
