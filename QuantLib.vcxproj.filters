@@ -4130,6 +4130,9 @@
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.hpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClInclude>
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholescnvariantvanillaengine.hpp">
+      <Filter>pricingengines\vanilla</Filter>
+    </ClInclude>
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.hpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClInclude>
@@ -6896,6 +6899,9 @@
       <Filter>methods\finitedifferences\stepconditions</Filter>
     </ClCompile>
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.cpp">
+      <Filter>pricingengines\vanilla</Filter>
+    </ClCompile>
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholescnvariantvanillaengine.cpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClCompile>
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.cpp">

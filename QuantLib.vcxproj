@@ -1579,6 +1579,7 @@
     <ClInclude Include="ql\pricingengines\vanilla\discretizedvanillaoption.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\exponentialfittinghestonengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdbatesvanillaengine.hpp" />
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholescnvariantvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesshoutengine.hpp" />
@@ -2610,6 +2611,7 @@
     <ClCompile Include="ql\pricingengines\vanilla\discretizedvanillaoption.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\exponentialfittinghestonengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdbatesvanillaengine.cpp" />
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholescnvariantvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesshoutengine.cpp" />
