@@ -4,8 +4,8 @@
 #include <ql/methods/finitedifferences/stepconditions/fdmamericanstepcondition.hpp>
 #include <ql/methods/finitedifferences/stepconditions/fdmarithmeticaveragecondition.hpp>
 #include <ql/methods/finitedifferences/stepconditions/fdmbermudanstepcondition.hpp>
+#include <ql/methods/finitedifferences/stepconditions/fdmdiscretedoublebarrierstepcondition.hpp>
 #include <ql/methods/finitedifferences/stepconditions/fdmsimplestoragecondition.hpp>
 #include <ql/methods/finitedifferences/stepconditions/fdmsimpleswingcondition.hpp>
 #include <ql/methods/finitedifferences/stepconditions/fdmsnapshotcondition.hpp>
 #include <ql/methods/finitedifferences/stepconditions/fdmstepconditioncomposite.hpp>
-

@@ -2,24 +2,26 @@
 AM_CPPFLAGS = -I${top_builddir} -I${top_srcdir}
 
 this_includedir=${includedir}/${subdir}
-this_include_HEADERS = \
-	all.hpp \
-	fdmamericanstepcondition.hpp \
-	fdmarithmeticaveragecondition.hpp \
-	fdmbermudanstepcondition.hpp \
-	fdmsimplestoragecondition.hpp \
-	fdmsimpleswingcondition.hpp \
-	fdmsnapshotcondition.hpp \
-	fdmstepconditioncomposite.hpp
+	this_include_HEADERS = \
+		all.hpp \
+		fdmamericanstepcondition.hpp \
+		fdmarithmeticaveragecondition.hpp \
+		fdmbermudanstepcondition.hpp \
+		fdmdiscretedoublebarrierstepcondition.hpp \
+		fdmsimplestoragecondition.hpp \
+		fdmsimpleswingcondition.hpp \
+		fdmsnapshotcondition.hpp \
+		fdmstepconditioncomposite.hpp
 
-cpp_files = \
-	fdmamericanstepcondition.cpp \
-	fdmarithmeticaveragecondition.cpp \
-	fdmbermudanstepcondition.cpp \
-	fdmsimplestoragecondition.cpp \
-	fdmsimpleswingcondition.cpp \
-	fdmsnapshotcondition.cpp \
-	fdmstepconditioncomposite.cpp
+	cpp_files = \
+		fdmamericanstepcondition.cpp \
+		fdmarithmeticaveragecondition.cpp \
+		fdmbermudanstepcondition.cpp \
+		fdmdiscretedoublebarrierstepcondition.cpp \
+		fdmsimplestoragecondition.cpp \
+		fdmsimpleswingcondition.cpp \
+		fdmsnapshotcondition.cpp \
+		fdmstepconditioncomposite.cpp
 
 if UNITY_BUILD
 
@@ -54,4 +56,3 @@ all.hpp: Makefile.am
 	subdirs='$(SUBDIRS)'; for i in $$subdirs; do \
 		echo "#include <${subdir}/$$i/all.hpp>" >> ${srcdir}/$@; \
 	done
-

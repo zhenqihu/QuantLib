@@ -31,4 +31,3 @@
 #include <ql/experimental/finitedifferences/glued1dmesher.hpp>
 #include <ql/experimental/finitedifferences/modtriplebandlinearop.hpp>
 #include <ql/experimental/finitedifferences/vanillavppoption.hpp>
-

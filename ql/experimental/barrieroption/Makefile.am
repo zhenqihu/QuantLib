@@ -5,8 +5,11 @@ this_includedir=${includedir}/${subdir}
 this_include_HEADERS = \
     all.hpp \
     analyticdoublebarrierbinaryengine.hpp \
-	analyticdoublebarrierengine.hpp \
-	mcdoublebarrierengine.hpp \
+		analyticdoublebarrierengine.hpp \
+		fdblackscholescnvariantdiscretedoublebarrierengine.hpp \
+		fdblackscholesdiscretedoublebarrierengine.hpp \
+		fdblackscholesexpfitdiscretedoublebarrierengine.hpp \
+		mcdoublebarrierengine.hpp \
     binomialdoublebarrierengine.hpp \
     discretizeddoublebarrieroption.hpp \
     doublebarrieroption.hpp \
@@ -20,8 +23,11 @@ this_include_HEADERS = \
 
 cpp_files = \
     analyticdoublebarrierbinaryengine.cpp \
-	analyticdoublebarrierengine.cpp \
-	mcdoublebarrierengine.cpp \
+		analyticdoublebarrierengine.cpp \
+		fdblackscholescnvariantdiscretedoublebarrierengine.cpp \
+		fdblackscholesdiscretedoublebarrierengine.cpp \
+		fdblackscholesexpfitdiscretedoublebarrierengine.cpp \
+		mcdoublebarrierengine.cpp \
     discretizeddoublebarrieroption.cpp \
     doublebarrieroption.cpp \
     doublebarriertype.cpp \
@@ -63,4 +69,3 @@ all.hpp: Makefile.am
 	subdirs='$(SUBDIRS)'; for i in $$subdirs; do \
 		echo "#include <${subdir}/$$i/all.hpp>" >> ${srcdir}/$@; \
 	done
-
