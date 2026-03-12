@@ -57,6 +57,9 @@ set(QuantLib_SRC
     experimental/averageois/makearithmeticaverageois.cpp
     experimental/barrieroption/analyticdoublebarrierbinaryengine.cpp
     experimental/barrieroption/analyticdoublebarrierengine.cpp
+    experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.cpp
+    experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.cpp
+    experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.cpp
     experimental/barrieroption/mcdoublebarrierengine.cpp
     experimental/barrieroption/discretizeddoublebarrieroption.cpp
     experimental/barrieroption/doublebarrieroption.cpp
@@ -502,6 +505,7 @@ set(QuantLib_SRC
     methods/finitedifferences/stepconditions/fdmamericanstepcondition.cpp
     methods/finitedifferences/stepconditions/fdmarithmeticaveragecondition.cpp
     methods/finitedifferences/stepconditions/fdmbermudanstepcondition.cpp
+    methods/finitedifferences/stepconditions/fdmdiscretedoublebarrierstepcondition.cpp
     methods/finitedifferences/stepconditions/fdmsimplestoragecondition.cpp
     methods/finitedifferences/stepconditions/fdmsimpleswingcondition.cpp
     methods/finitedifferences/stepconditions/fdmsnapshotcondition.cpp
@@ -1001,6 +1005,9 @@ set(QuantLib_HDR
     experimental/barrieroption/all.hpp
     experimental/barrieroption/analyticdoublebarrierbinaryengine.hpp
     experimental/barrieroption/analyticdoublebarrierengine.hpp
+    experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.hpp
+    experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.hpp
+    experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.hpp
     experimental/barrieroption/mcdoublebarrierengine.hpp
     experimental/barrieroption/binomialdoublebarrierengine.hpp
     experimental/barrieroption/discretizeddoublebarrieroption.hpp
@@ -1697,6 +1704,7 @@ set(QuantLib_HDR
     methods/finitedifferences/stepconditions/fdmamericanstepcondition.hpp
     methods/finitedifferences/stepconditions/fdmarithmeticaveragecondition.hpp
     methods/finitedifferences/stepconditions/fdmbermudanstepcondition.hpp
+    methods/finitedifferences/stepconditions/fdmdiscretedoublebarrierstepcondition.hpp
     methods/finitedifferences/stepconditions/fdmsimplestoragecondition.hpp
     methods/finitedifferences/stepconditions/fdmsimpleswingcondition.hpp
     methods/finitedifferences/stepconditions/fdmsnapshotcondition.hpp

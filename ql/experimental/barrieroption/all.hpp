@@ -3,6 +3,9 @@
 
 #include <ql/experimental/barrieroption/analyticdoublebarrierbinaryengine.hpp>
 #include <ql/experimental/barrieroption/analyticdoublebarrierengine.hpp>
+#include <ql/experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.hpp>
+#include <ql/experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.hpp>
+#include <ql/experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/mcdoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/binomialdoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/discretizeddoublebarrieroption.hpp>
@@ -14,4 +17,3 @@
 #include <ql/experimental/barrieroption/vannavolgadoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/vannavolgainterpolation.hpp>
 #include <ql/experimental/barrieroption/wulinyongdoublebarrierengine.hpp>
-
