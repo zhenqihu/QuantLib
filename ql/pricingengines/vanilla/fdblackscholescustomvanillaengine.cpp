@@ -17,7 +17,7 @@
  FOR A PARTICULAR PURPOSE.  See the license for more details.
 */
 
-/*! \file fdblackscholesuniformvanillaengine.cpp
+/*! \file fdblackscholescustomvanillaengine.cpp
 */
 
 #include <ql/exercise.hpp>
@@ -29,13 +29,14 @@
 #include <ql/methods/finitedifferences/utilities/fdmescrowedloginnervaluecalculator.hpp>
 #include <ql/methods/finitedifferences/utilities/fdminnervaluecalculator.hpp>
 #include <ql/methods/finitedifferences/utilities/fdmquantohelper.hpp>
-#include <ql/pricingengines/vanilla/fdblackscholesuniformvanillaengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholescustomvanillaengine.hpp>
 #include <ql/processes/blackscholesprocess.hpp>
+#include <cmath>
 #include <utility>
 
 namespace QuantLib {
 
-    FdBlackScholesUniformVanillaEngine::FdBlackScholesUniformVanillaEngine(
+    FdBlackScholesCustomVanillaEngine::FdBlackScholesCustomVanillaEngine(
         ext::shared_ptr<GeneralizedBlackScholesProcess> process,
         Size tGrid,
         Size xGrid,
@@ -44,6 +45,7 @@ namespace QuantLib {
         bool localVol,
         Real illegalLocalVolOverwrite,
         CashDividendModel cashDividendModel,
+        EquityMesher equityMesher,
         Real xMinConstraint,
         Real xMaxConstraint)
     : process_(std::move(process)), tGrid_(tGrid), xGrid_(xGrid),
@@ -52,11 +54,12 @@ namespace QuantLib {
       illegalLocalVolOverwrite_(illegalLocalVolOverwrite),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
       cashDividendModel_(cashDividendModel),
+      equityMesher_(equityMesher),
       xMinConstraint_(xMinConstraint), xMaxConstraint_(xMaxConstraint) {
         registerWith(process_);
     }
 
-    FdBlackScholesUniformVanillaEngine::FdBlackScholesUniformVanillaEngine(
+    FdBlackScholesCustomVanillaEngine::FdBlackScholesCustomVanillaEngine(
         ext::shared_ptr<GeneralizedBlackScholesProcess> process,
         ext::shared_ptr<FdmQuantoHelper> quantoHelper,
         Size tGrid,
@@ -66,6 +69,7 @@ namespace QuantLib {
         bool localVol,
         Real illegalLocalVolOverwrite,
         CashDividendModel cashDividendModel,
+        EquityMesher equityMesher,
         Real xMinConstraint,
         Real xMaxConstraint)
     : process_(std::move(process)), tGrid_(tGrid), xGrid_(xGrid),
@@ -74,12 +78,13 @@ namespace QuantLib {
       illegalLocalVolOverwrite_(illegalLocalVolOverwrite),
       quantoHelper_(std::move(quantoHelper)),
       cashDividendModel_(cashDividendModel),
+      equityMesher_(equityMesher),
       xMinConstraint_(xMinConstraint), xMaxConstraint_(xMaxConstraint) {
         registerWith(process_);
         registerWith(quantoHelper_);
     }
 
-    void FdBlackScholesUniformVanillaEngine::calculate() const {
+    void FdBlackScholesCustomVanillaEngine::calculate() const {
         const Date exerciseDate = arguments_.exercise->lastDate();
         const Time maturity = process_->time(exerciseDate);
         const Date settlementDate = process_->riskFreeRate()->referenceDate();
@@ -129,11 +134,28 @@ namespace QuantLib {
                        "xMinConstraint must be smaller than xMaxConstraint");
         }
 
+        if (equityMesher_ == Concentrating) {
+            const Real logStrike = std::log(payoff->strike());
+            QL_REQUIRE(xMinConstraint_ == Null<Real>()
+                           || xMinConstraint_ <= logStrike,
+                       "xMinConstraint must not exclude the log-strike "
+                       "when using the concentrating equity mesher");
+            QL_REQUIRE(xMaxConstraint_ == Null<Real>()
+                           || xMaxConstraint_ >= logStrike,
+                       "xMaxConstraint must not exclude the log-strike "
+                       "when using the concentrating equity mesher");
+        }
+
+        const std::pair<Real, Real> cPoint =
+            (equityMesher_ == Concentrating)
+                ? std::make_pair(payoff->strike(), 0.1)
+                : std::make_pair(Null<Real>(), Null<Real>());
+
         const ext::shared_ptr<Fdm1dMesher> equityMesher =
             ext::make_shared<FdmBlackScholesMesher>(
                 xGrid_, process_, maturity, payoff->strike(),
-                xMinConstraint_, xMaxConstraint_, 0.0001, 1.5,
-                std::make_pair(Null<Real>(), Null<Real>()), dividendSchedule,
+                xMinConstraint_, xMaxConstraint_, 0.0001, 1.5, cPoint,
+                dividendSchedule,
                 quantoHelper_, spotAdjustment);
 
         const ext::shared_ptr<FdmMesher> mesher =
@@ -181,90 +203,99 @@ namespace QuantLib {
         results_.theta = solver->thetaAt(spot);
     }
 
-    MakeFdBlackScholesUniformVanillaEngine::
-        MakeFdBlackScholesUniformVanillaEngine(
+    MakeFdBlackScholesCustomVanillaEngine::
+        MakeFdBlackScholesCustomVanillaEngine(
             ext::shared_ptr<GeneralizedBlackScholesProcess> process)
     : process_(std::move(process)), tGrid_(100), xGrid_(100),
       dampingSteps_(0),
       schemeDesc_(ext::make_shared<FdmSchemeDesc>(FdmSchemeDesc::Douglas())),
       localVol_(false), illegalLocalVolOverwrite_(-Null<Real>()),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
-      cashDividendModel_(FdBlackScholesUniformVanillaEngine::Spot),
+      cashDividendModel_(FdBlackScholesCustomVanillaEngine::Spot),
+      equityMesher_(FdBlackScholesCustomVanillaEngine::Uniform),
       xMinConstraint_(Null<Real>()), xMaxConstraint_(Null<Real>()) {}
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withQuantoHelper(
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withQuantoHelper(
         const ext::shared_ptr<FdmQuantoHelper>& quantoHelper) {
         quantoHelper_ = quantoHelper;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withTGrid(Size tGrid) {
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withTGrid(Size tGrid) {
         tGrid_ = tGrid;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withXGrid(Size xGrid) {
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withXGrid(Size xGrid) {
         xGrid_ = xGrid;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withDampingSteps(
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withDampingSteps(
         Size dampingSteps) {
         dampingSteps_ = dampingSteps;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withFdmSchemeDesc(
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withFdmSchemeDesc(
         const FdmSchemeDesc& schemeDesc) {
         schemeDesc_ = ext::make_shared<FdmSchemeDesc>(schemeDesc);
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withLocalVol(bool localVol) {
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withLocalVol(bool localVol) {
         localVol_ = localVol;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withIllegalLocalVolOverwrite(
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withIllegalLocalVolOverwrite(
         Real illegalLocalVolOverwrite) {
         illegalLocalVolOverwrite_ = illegalLocalVolOverwrite;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withCashDividendModel(
-        FdBlackScholesUniformVanillaEngine::CashDividendModel
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withCashDividendModel(
+        FdBlackScholesCustomVanillaEngine::CashDividendModel
             cashDividendModel) {
         cashDividendModel_ = cashDividendModel;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withXMinConstraint(
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withEquityMesher(
+        FdBlackScholesCustomVanillaEngine::EquityMesher equityMesher) {
+        equityMesher_ = equityMesher;
+        return *this;
+    }
+
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withXMinConstraint(
         Real xMinConstraint) {
         xMinConstraint_ = xMinConstraint;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine&
-    MakeFdBlackScholesUniformVanillaEngine::withXMaxConstraint(
+    MakeFdBlackScholesCustomVanillaEngine&
+    MakeFdBlackScholesCustomVanillaEngine::withXMaxConstraint(
         Real xMaxConstraint) {
         xMaxConstraint_ = xMaxConstraint;
         return *this;
     }
 
-    MakeFdBlackScholesUniformVanillaEngine::operator
+    MakeFdBlackScholesCustomVanillaEngine::operator
     ext::shared_ptr<PricingEngine>() const {
-        return ext::make_shared<FdBlackScholesUniformVanillaEngine>(
+        return ext::make_shared<FdBlackScholesCustomVanillaEngine>(
             process_, quantoHelper_, tGrid_, xGrid_, dampingSteps_,
             *schemeDesc_, localVol_, illegalLocalVolOverwrite_,
-            cashDividendModel_, xMinConstraint_, xMaxConstraint_);
+            cashDividendModel_, equityMesher_,
+            xMinConstraint_, xMaxConstraint_);
     }
 }

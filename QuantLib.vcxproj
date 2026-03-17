@@ -1581,7 +1581,7 @@
     <ClInclude Include="ql\pricingengines\vanilla\fdbatesvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholescnvariantvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.hpp" />
-    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.hpp" />
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholescustomvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesshoutengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.hpp" />
     <ClInclude Include="ql\pricingengines\vanilla\fdcevvanillaengine.hpp" />
@@ -2613,7 +2613,7 @@
     <ClCompile Include="ql\pricingengines\vanilla\fdbatesvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholescnvariantvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.cpp" />
-    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.cpp" />
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholescustomvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesshoutengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesvanillaengine.cpp" />
     <ClCompile Include="ql\pricingengines\vanilla\fdcevvanillaengine.cpp" />

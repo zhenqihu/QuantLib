@@ -746,7 +746,7 @@ set(QuantLib_SRC
     pricingengines/vanilla/fdbatesvanillaengine.cpp
     pricingengines/vanilla/fdblackscholescnvariantvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesexpfitvanillaengine.cpp
-    pricingengines/vanilla/fdblackscholesuniformvanillaengine.cpp
+    pricingengines/vanilla/fdblackscholescustomvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesvanillaengine.cpp
     pricingengines/vanilla/fdblackscholesshoutengine.cpp
     pricingengines/vanilla/fdcirvanillaengine.cpp
@@ -2047,7 +2047,7 @@ set(QuantLib_HDR
     pricingengines/vanilla/fdbatesvanillaengine.hpp
     pricingengines/vanilla/fdblackscholescnvariantvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp
-    pricingengines/vanilla/fdblackscholesuniformvanillaengine.hpp
+    pricingengines/vanilla/fdblackscholescustomvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesvanillaengine.hpp
     pricingengines/vanilla/fdblackscholesshoutengine.hpp
     pricingengines/vanilla/fdcirvanillaengine.hpp

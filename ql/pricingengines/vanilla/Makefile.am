@@ -29,7 +29,7 @@ this_include_HEADERS = \
 	fdbatesvanillaengine.hpp \
 	fdblackscholescnvariantvanillaengine.hpp \
 	fdblackscholesexpfitvanillaengine.hpp \
-	fdblackscholesuniformvanillaengine.hpp \
+	fdblackscholescustomvanillaengine.hpp \
 	fdblackscholesvanillaengine.hpp \
 	fdblackscholesshoutengine.hpp \
 	fdcevvanillaengine.hpp \
@@ -78,7 +78,7 @@ cpp_files = \
 	fdbatesvanillaengine.cpp \
 	fdblackscholescnvariantvanillaengine.cpp \
 	fdblackscholesexpfitvanillaengine.cpp \
-	fdblackscholesuniformvanillaengine.cpp \
+	fdblackscholescustomvanillaengine.cpp \
 	fdblackscholesvanillaengine.cpp \
 	fdblackscholesshoutengine.cpp \
 	fdcevvanillaengine.cpp \

@@ -26,7 +26,7 @@
 #include <ql/pricingengines/vanilla/fdbatesvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholescnvariantvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesexpfitvanillaengine.hpp>
-#include <ql/pricingengines/vanilla/fdblackscholesuniformvanillaengine.hpp>
+#include <ql/pricingengines/vanilla/fdblackscholescustomvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesvanillaengine.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholesshoutengine.hpp>
 #include <ql/pricingengines/vanilla/fdcevvanillaengine.hpp>

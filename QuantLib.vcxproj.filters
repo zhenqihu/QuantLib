@@ -4136,7 +4136,7 @@
     <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.hpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClInclude>
-    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.hpp">
+    <ClInclude Include="ql\pricingengines\vanilla\fdblackscholescustomvanillaengine.hpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClInclude>
     <ClInclude Include="ql\methods\finitedifferences\solvers\fdm1dimsolver.hpp">
@@ -6907,7 +6907,7 @@
     <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesexpfitvanillaengine.cpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClCompile>
-    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholesuniformvanillaengine.cpp">
+    <ClCompile Include="ql\pricingengines\vanilla\fdblackscholescustomvanillaengine.cpp">
       <Filter>pricingengines\vanilla</Filter>
     </ClCompile>
     <ClCompile Include="ql\methods\finitedifferences\solvers\fdm1dimsolver.cpp">
