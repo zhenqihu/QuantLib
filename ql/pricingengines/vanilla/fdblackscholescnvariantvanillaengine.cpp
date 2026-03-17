@@ -31,6 +31,7 @@
 #include <ql/methods/finitedifferences/utilities/fdmquantohelper.hpp>
 #include <ql/pricingengines/vanilla/fdblackscholescnvariantvanillaengine.hpp>
 #include <ql/processes/blackscholesprocess.hpp>
+#include <cmath>
 #include <utility>
 
 namespace QuantLib {
@@ -45,6 +46,7 @@ namespace QuantLib {
         bool localVol,
         Real illegalLocalVolOverwrite,
         CashDividendModel cashDividendModel,
+        EquityMesher equityMesher,
         Real xMinConstraint,
         Real xMaxConstraint)
     : process_(std::move(process)), tGrid_(tGrid), xGrid_(xGrid),
@@ -52,7 +54,7 @@ namespace QuantLib {
       localVol_(localVol),
       illegalLocalVolOverwrite_(illegalLocalVolOverwrite),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
-      cashDividendModel_(cashDividendModel),
+      cashDividendModel_(cashDividendModel), equityMesher_(equityMesher),
       xMinConstraint_(xMinConstraint), xMaxConstraint_(xMaxConstraint) {
         registerWith(process_);
     }
@@ -68,6 +70,7 @@ namespace QuantLib {
         bool localVol,
         Real illegalLocalVolOverwrite,
         CashDividendModel cashDividendModel,
+        EquityMesher equityMesher,
         Real xMinConstraint,
         Real xMaxConstraint)
     : process_(std::move(process)), tGrid_(tGrid), xGrid_(xGrid),
@@ -75,7 +78,7 @@ namespace QuantLib {
       localVol_(localVol),
       illegalLocalVolOverwrite_(illegalLocalVolOverwrite),
       quantoHelper_(std::move(quantoHelper)),
-      cashDividendModel_(cashDividendModel),
+      cashDividendModel_(cashDividendModel), equityMesher_(equityMesher),
       xMinConstraint_(xMinConstraint), xMaxConstraint_(xMaxConstraint) {
         registerWith(process_);
         registerWith(quantoHelper_);
@@ -131,12 +134,28 @@ namespace QuantLib {
                        "xMinConstraint must be smaller than xMaxConstraint");
         }
 
+        if (equityMesher_ == Concentrating) {
+            const Real logStrike = std::log(payoff->strike());
+            QL_REQUIRE(xMinConstraint_ == Null<Real>()
+                           || xMinConstraint_ <= logStrike,
+                       "xMinConstraint must not exclude the log-strike "
+                       "when using the concentrating equity mesher");
+            QL_REQUIRE(xMaxConstraint_ == Null<Real>()
+                           || xMaxConstraint_ >= logStrike,
+                       "xMaxConstraint must not exclude the log-strike "
+                       "when using the concentrating equity mesher");
+        }
+
+        const std::pair<Real, Real> cPoint =
+            (equityMesher_ == Concentrating)
+                ? std::make_pair(payoff->strike(), 0.1)
+                : std::make_pair(Null<Real>(), Null<Real>());
+
         const ext::shared_ptr<Fdm1dMesher> equityMesher =
             ext::make_shared<FdmBlackScholesMesher>(
                 xGrid_, process_, maturity, payoff->strike(),
                 xMinConstraint_, xMaxConstraint_, 0.0001, 1.5,
-                std::make_pair(Null<Real>(), Null<Real>()), dividendSchedule,
-                quantoHelper_, spotAdjustment);
+                cPoint, dividendSchedule, quantoHelper_, spotAdjustment);
 
         const ext::shared_ptr<FdmMesher> mesher =
             ext::make_shared<FdmMesherComposite>(equityMesher);
@@ -193,6 +212,7 @@ namespace QuantLib {
       localVol_(false), illegalLocalVolOverwrite_(-Null<Real>()),
       quantoHelper_(ext::shared_ptr<FdmQuantoHelper>()),
       cashDividendModel_(FdBlackScholesCnVariantVanillaEngine::Spot),
+      equityMesher_(FdBlackScholesCnVariantVanillaEngine::Uniform),
       xMinConstraint_(Null<Real>()), xMaxConstraint_(Null<Real>()) {}
 
     MakeFdBlackScholesCnVariantVanillaEngine&
@@ -250,6 +270,13 @@ namespace QuantLib {
     }
 
     MakeFdBlackScholesCnVariantVanillaEngine&
+    MakeFdBlackScholesCnVariantVanillaEngine::withEquityMesher(
+        FdBlackScholesCnVariantVanillaEngine::EquityMesher equityMesher) {
+        equityMesher_ = equityMesher;
+        return *this;
+    }
+
+    MakeFdBlackScholesCnVariantVanillaEngine&
     MakeFdBlackScholesCnVariantVanillaEngine::withXMinConstraint(
         Real xMinConstraint) {
         xMinConstraint_ = xMinConstraint;
@@ -268,6 +295,7 @@ namespace QuantLib {
         return ext::make_shared<FdBlackScholesCnVariantVanillaEngine>(
             process_, quantoHelper_, tGrid_, xGrid_, dampingSteps_,
             *schemeDesc_, localVol_, illegalLocalVolOverwrite_,
-            cashDividendModel_, xMinConstraint_, xMaxConstraint_);
+            cashDividendModel_, equityMesher_, xMinConstraint_,
+            xMaxConstraint_);
     }
 }

@@ -38,6 +38,7 @@ namespace QuantLib {
         : public DividendVanillaOption::engine {
       public:
         enum CashDividendModel { Spot, Escrowed };
+        enum EquityMesher { Concentrating, Uniform };
 
         explicit FdBlackScholesCnVariantVanillaEngine(
             ext::shared_ptr<GeneralizedBlackScholesProcess>,
@@ -49,6 +50,7 @@ namespace QuantLib {
             bool localVol = false,
             Real illegalLocalVolOverwrite = -Null<Real>(),
             CashDividendModel cashDividendModel = Spot,
+            EquityMesher equityMesher = Uniform,
             Real xMinConstraint = Null<Real>(),
             Real xMaxConstraint = Null<Real>());
 
@@ -63,6 +65,7 @@ namespace QuantLib {
             bool localVol = false,
             Real illegalLocalVolOverwrite = -Null<Real>(),
             CashDividendModel cashDividendModel = Spot,
+            EquityMesher equityMesher = Uniform,
             Real xMinConstraint = Null<Real>(),
             Real xMaxConstraint = Null<Real>());
 
@@ -76,6 +79,7 @@ namespace QuantLib {
         const Real illegalLocalVolOverwrite_;
         const ext::shared_ptr<FdmQuantoHelper> quantoHelper_;
         const CashDividendModel cashDividendModel_;
+        const EquityMesher equityMesher_;
         const Real xMinConstraint_, xMaxConstraint_;
     };
 
@@ -103,6 +107,9 @@ namespace QuantLib {
             FdBlackScholesCnVariantVanillaEngine::CashDividendModel
                 cashDividendModel);
 
+        MakeFdBlackScholesCnVariantVanillaEngine& withEquityMesher(
+            FdBlackScholesCnVariantVanillaEngine::EquityMesher equityMesher);
+
         MakeFdBlackScholesCnVariantVanillaEngine& withXMinConstraint(
             Real xMinConstraint);
         MakeFdBlackScholesCnVariantVanillaEngine& withXMaxConstraint(
@@ -119,6 +126,7 @@ namespace QuantLib {
         ext::shared_ptr<FdmQuantoHelper> quantoHelper_;
         FdBlackScholesCnVariantVanillaEngine::CashDividendModel
             cashDividendModel_;
+        FdBlackScholesCnVariantVanillaEngine::EquityMesher equityMesher_;
         Real xMinConstraint_, xMaxConstraint_;
     };
 }
