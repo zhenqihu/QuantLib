@@ -5,10 +5,11 @@ this_includedir=${includedir}/${subdir}
 this_include_HEADERS = \
     all.hpp \
     analyticdoublebarrierbinaryengine.hpp \
-		analyticdoublebarrierengine.hpp \
+    analyticdoublebarrierengine.hpp \
 		fdblackscholescnvariantdiscretedoublebarrierengine.hpp \
 		fdblackscholesdiscretedoublebarrierengine.hpp \
 		fdblackscholesexpfitdiscretedoublebarrierengine.hpp \
+		mcdiscretedoublebarrierengine.hpp \
 		mcdoublebarrierengine.hpp \
     binomialdoublebarrierengine.hpp \
     discretizeddoublebarrieroption.hpp \

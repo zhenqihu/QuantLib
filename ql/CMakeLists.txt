@@ -1008,6 +1008,7 @@ set(QuantLib_HDR
     experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.hpp
     experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.hpp
     experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.hpp
+    experimental/barrieroption/mcdiscretedoublebarrierengine.hpp
     experimental/barrieroption/mcdoublebarrierengine.hpp
     experimental/barrieroption/binomialdoublebarrierengine.hpp
     experimental/barrieroption/discretizeddoublebarrieroption.hpp

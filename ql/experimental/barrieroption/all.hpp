@@ -6,6 +6,7 @@
 #include <ql/experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.hpp>
+#include <ql/experimental/barrieroption/mcdiscretedoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/mcdoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/binomialdoublebarrierengine.hpp>
 #include <ql/experimental/barrieroption/discretizeddoublebarrieroption.hpp>
