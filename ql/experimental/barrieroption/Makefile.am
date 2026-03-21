@@ -6,8 +6,11 @@ this_include_HEADERS = \
     all.hpp \
     analyticdoublebarrierbinaryengine.hpp \
     analyticdoublebarrierengine.hpp \
+		fdblackscholescnvariantdoublebarrierengine.hpp \
 		fdblackscholescnvariantdiscretedoublebarrierengine.hpp \
+		fdblackscholesdoublebarrierengine.hpp \
 		fdblackscholesdiscretedoublebarrierengine.hpp \
+		fdblackscholesexpfitdoublebarrierengine.hpp \
 		fdblackscholesexpfitdiscretedoublebarrierengine.hpp \
 		mcdiscretedoublebarrierengine.hpp \
 		mcdoublebarrierengine.hpp \
@@ -25,8 +28,11 @@ this_include_HEADERS = \
 cpp_files = \
     analyticdoublebarrierbinaryengine.cpp \
 		analyticdoublebarrierengine.cpp \
+		fdblackscholescnvariantdoublebarrierengine.cpp \
 		fdblackscholescnvariantdiscretedoublebarrierengine.cpp \
+		fdblackscholesdoublebarrierengine.cpp \
 		fdblackscholesdiscretedoublebarrierengine.cpp \
+		fdblackscholesexpfitdoublebarrierengine.cpp \
 		fdblackscholesexpfitdiscretedoublebarrierengine.cpp \
 		mcdoublebarrierengine.cpp \
     discretizeddoublebarrieroption.cpp \

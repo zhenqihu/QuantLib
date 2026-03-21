@@ -57,8 +57,11 @@ set(QuantLib_SRC
     experimental/averageois/makearithmeticaverageois.cpp
     experimental/barrieroption/analyticdoublebarrierbinaryengine.cpp
     experimental/barrieroption/analyticdoublebarrierengine.cpp
+    experimental/barrieroption/fdblackscholescnvariantdoublebarrierengine.cpp
     experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.cpp
+    experimental/barrieroption/fdblackscholesdoublebarrierengine.cpp
     experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.cpp
+    experimental/barrieroption/fdblackscholesexpfitdoublebarrierengine.cpp
     experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.cpp
     experimental/barrieroption/mcdoublebarrierengine.cpp
     experimental/barrieroption/discretizeddoublebarrieroption.cpp
@@ -1005,8 +1008,11 @@ set(QuantLib_HDR
     experimental/barrieroption/all.hpp
     experimental/barrieroption/analyticdoublebarrierbinaryengine.hpp
     experimental/barrieroption/analyticdoublebarrierengine.hpp
+    experimental/barrieroption/fdblackscholescnvariantdoublebarrierengine.hpp
     experimental/barrieroption/fdblackscholescnvariantdiscretedoublebarrierengine.hpp
+    experimental/barrieroption/fdblackscholesdoublebarrierengine.hpp
     experimental/barrieroption/fdblackscholesdiscretedoublebarrierengine.hpp
+    experimental/barrieroption/fdblackscholesexpfitdoublebarrierengine.hpp
     experimental/barrieroption/fdblackscholesexpfitdiscretedoublebarrierengine.hpp
     experimental/barrieroption/mcdiscretedoublebarrierengine.hpp
     experimental/barrieroption/mcdoublebarrierengine.hpp
